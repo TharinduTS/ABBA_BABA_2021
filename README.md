@@ -4,28 +4,17 @@ I received seperate VCF files for each of the chromosomes of Xenopus laevis. Goi
 
 Testing codes
 
-
-
-
-
-
-
-
-
-
-******************** Not going to use here *********************************************
-```txt
-# Select few samples to make a smaller VCF file and make it easier to process for the test run
-
-view samples
-```bash
-module load bcftools
-bcftools query -l DB_chr7S_out.vcf
+Created a reference genome folder
+Downloaded reference genome in that folder
 ```
-Select few samples and make files out of them
-First, create a txt file with the sample list to extract using vi
-then, (this may give an error trying to read white space as a file. No need to worry)
-```bash
-while read i ; do bcftools view -s "$i" DB_chr7S_out.vcf > "$i".vcf ; done < sample_list_to_extract.txt
+wget http://ftp.xenbase.org/pub/Genomics/JGI/Xenla9.2/XENLA_9.2_genome.fa.gz
+
 ```
-```
+
+
+
+
+
+
+
+

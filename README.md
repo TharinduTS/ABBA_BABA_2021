@@ -24,6 +24,7 @@ module load nixpkgs/16.09
 module load gatk/4.1.2.0
 gatk --java-options "-Xmx2G" CreateSequenceDictionary -R   XENLA_9.2_genome.fa
 ```
+Create a saved scripts folder and save following script
 
 
 

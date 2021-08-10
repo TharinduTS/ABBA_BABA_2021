@@ -24,6 +24,31 @@ module load nixpkgs/16.09
 module load gatk/4.1.2.0
 gatk --java-options "-Xmx2G" CreateSequenceDictionary -R   XENLA_9.2_genome.fa
 ```
+To increase efficiency, I renamed chr 9_10 as chr 9 so I can submit job arrays
+```bash
+find . -type f -name '*9_10*' | while read FILE ; do     newfile="$(echo ${FILE} |sed -e 's/9_10/9/g')" ;     mv "${FILE}" "${newfile}" ; done
+```
+
+
+
+
+# testing array jobs
+```bash
+#!/bin/sh
+#SBATCH --job-name=bwa_505
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=4:00:00
+#SBATCH --mem=1gb
+#SBATCH --output=bwa505.%J.out
+#SBATCH --error=bwa505.%J.err
+#SBATCH --account=def-ben
+#SBATCH --array=1-9
+
+head ./../XL_vcf_files/DB_chr${SLURM_ARRAY_TASK_ID}L_out.vcf>${SLURM_ARRAY_TASK_ID}_L_test.txt
+head ./../XL_vcf_files/DB_chr${SLURM_ARRAY_TASK_ID}S_out.vcf>${SLURM_ARRAY_TASK_ID}_S_test.txt
+```
+
 Create a saved scripts folder and save following script as create_depth_table.sh
 
 ```bash

@@ -28,8 +28,9 @@ To increase efficiency, I renamed chr 9_10 as chr 9 so I can submit job arrays
 ```bash
 find . -type f -name '*9_10*' | while read FILE ; do     newfile="$(echo ${FILE} |sed -e 's/9_10/9/g')" ;     mv "${FILE}" "${newfile}" ; done
 ```
-Submit array of jobs for different chromosomes to create depth tables - make sure memory yoy reserve is at least 4 times the memory in '-Xmx'
 
+Submit array of jobs for different chromosomes to create depth tables - make sure memory yoy reserve is at least 4 times the memory in '-Xmx'
+Create a saved scripts folder and save following script as create_depth_table.sh
 ```bash
 #!/bin/sh
 #SBATCH --job-name=bwa_505
@@ -65,16 +66,20 @@ for i in ./../XL_vcf_files/DB_new_chr${SLURM_ARRAY_TASK_ID}L_out_updated.vcf; do
 for i in ./../XL_vcf_files/DB_new_chr${SLURM_ARRAY_TASK_ID}S_out_updated.vcf; do java -Xmx1G -jar $EBROOTGATK/GenomeAnalysisTK.jar -T VariantsToTable -R ./../reference_genome/XENLA_9.2_genome.fa -V $i -F CHROM -F POS -GF DP -o ${i#./../XL_vcf_files/}_GVCF_DP.table ; done
 
 ```
-
-Create a saved scripts folder and save following script as create_depth_table.sh
+Move dp tables to a seperate directory
+```bash
+mkdir ../dp_tables
+mv ./*DP.table ../dp_tables/
+```
+Run the aove script for all the files
 
 ```bash
 #!/bin/sh
 #SBATCH --job-name=bwa_505
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --time=36:00:00
-#SBATCH --mem=64gb
+#SBATCH --time=24:00:00
+#SBATCH --mem=32gb
 #SBATCH --output=bwa505.%J.out
 #SBATCH --error=bwa505.%J.err
 #SBATCH --account=def-ben
@@ -87,10 +92,13 @@ Create a saved scripts folder and save following script as create_depth_table.sh
 #SBATCH --mail-type=ALL
 
 module load nixpkgs/16.09
-module load gatk/3.8
+module load gcc/7.3.0
+module load r
 
-for i in ./../XL_vcf_files/*.vcf; do java -Xmx16G -jar $EBROOTGATK/GenomeAnalysisTK.jar -T VariantsToTable -R ./../reference_genome/XENLA_9.2_genome.fa -V $i -F CHROM -F POS -GF DP -o ${i#./../XL_vcf_files/}_GVCF_DP.table ; done
+cp /scratch/premacht/laevis_GBS_2020/saved_scripts/cal_moving_dp_and_find_excludes.r .
+Rscript cal_moving_dp_and_find_excludes.r 
 ```
+
 
 
 

@@ -95,7 +95,7 @@ module load nixpkgs/16.09
 module load gcc/7.3.0
 module load r
 
-cp /scratch/premacht/laevis_GBS_2020/saved_scripts/cal_moving_dp_and_find_excludes.r .
+cp ./../saved_scripts/cal_moving_dp_and_find_excludes.r .
 Rscript cal_moving_dp_and_find_excludes.r 
 ```
 

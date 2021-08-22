@@ -282,8 +282,50 @@ mkdir positions_to_exclude
 mv dp_tables/*.pdf cutoff_plots/
 mv dp_tables/*exclude.txt positions_to_exclude/
 ```
+make a directory for positions excluded vcfs
+
+```bash
+mkdir positions_excluded
+```
+
+Filter selected sites submiting an array of jobs - writing this in saved scripts
+
+```bash
+#!/bin/sh
+#SBATCH --job-name=bwa_505
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=4:00:00
+#SBATCH --mem=4gb
+#SBATCH --output=bwa505.%J.out
+#SBATCH --error=bwa505.%J.err
+#SBATCH --account=def-ben
+#SBATCH --array=1-9
+
+#SBATCH --mail-user=premacht@mcmaster.ca
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=REQUEUE
+#SBATCH --mail-type=ALL
+
+# paste the same code twice , seperately for L and S
+
+module load nixpkgs/16.09
+module load intel/2018.3
+module load vcftools/0.1.16
 
 
+# For L
+
+vcftools --vcf ./../XL_vcf_files/DB_new_chr${SLURM_ARRAY_TASK_ID}L_out_updated.vcf --out ./../positions_excluded/DB_new_chr${SLURM_ARRAY_TASK_ID}L_out_updated_positions_excluded.vcf --exclude-positions ./../positions_to_exclude/DB_new_chr${SLURM_ARRAY_TASK_ID}L_out_updated.vcf_positions_to_exclude.txt --recode
+
+
+# For S
+
+vcftools --vcf ./../XL_vcf_files/DB_new_chr${SLURM_ARRAY_TASK_ID}S_out_updated.vcf --out ./../positions_excluded/DB_new_chr${SLURM_ARRAY_TASK_ID}S_out_updated_positions_excluded.vcf --exclude-positions ./../positions_to_exclude/DB_new_chr${SLURM_ARRAY_TASK_ID}S_out_updated.vcf_positions_to_exclude.txt --recode
+
+```
 
 
 

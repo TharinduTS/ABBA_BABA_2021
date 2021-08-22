@@ -274,7 +274,14 @@ cp ./../saved_scripts/cal_moving_dp_and_find_excludes.r .
 Rscript cal_moving_dp_and_find_excludes.r 
 ```
 
+put plots and positions to exclude in seperate directories
+```bash
+mkdir cutoff_plots
+mkdir positions_to_exclude
 
+mv dp_tables/*.pdf cutoff_plots/
+mv dp_tables/*exclude.txt positions_to_exclude/
+```
 
 
 

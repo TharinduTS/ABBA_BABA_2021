@@ -71,7 +71,182 @@ Move dp tables to a seperate directory
 mkdir ../dp_tables
 mv ./*DP.table ../dp_tables/
 ```
-Run the aove script for all the files
+Save the following R script in saved scripts folder- This 'Cal moving average depath, cal cutoffs , plot mean_over_cuttoff and output a file with sites to exclude, ready to be used by VCFtools in the next step'
+
+used loop to do this for all the chromosomes seperately
+
+```r
+# set working directory to current script directory 
+# **uncomment this if you use this in local computer. KEEP COMMENTED OUT IF YOU ARE ON COMPUTECANADA) ***
+# setwd(dirname(rstudioapi::getSourceEditorContext()$path))
+
+library (ggplot2)
+
+all_files<-list.files(path = ".", pattern = "GVCF_DP.table")
+
+for (chr_file in 1:length(all_files)) {
+  
+
+
+# get all the files with the site data
+files <- all_files[chr_file]
+my_data<-c()
+temp<-c()
+
+# read in the data and name the df based on the file name
+for(f in 1:length(files)) {
+  temp <- read.table(files[f], header = T)
+  my_data <- rbind(my_data,temp)
+  temp<-c()
+}  
+
+# my_data now has coverage per site info for each sample for all sites, genomewide
+dim(my_data)
+colnamez <- colnames(my_data)
+
+# here is a function to calculate moving averages
+# https://stackoverflow.com/questions/743812/calculating-moving-average
+moving_fun <- function(x, w, FUN, ...) {
+  # x: a double vector
+  # w: the length of the window, i.e., the section of the vector selected to apply FUN
+  # FUN: a function that takes a vector and return a summarize value, e.g., mean, sum, etc.
+  # Given a double type vector apply a FUN over a moving window from left to the right, 
+  #    when a window boundary is not a legal section, i.e. lower_bound and i (upper bound) 
+  #    are not contained in the length of the vector, return a NA_real_
+  if (w < 1) {
+    stop("The length of the window 'w' must be greater than 0")
+  }
+  output <- x
+  for (i in 1:length(x)) {
+    # plus 1 because the index is inclusive with the upper_bound 'i'
+    lower_bound <- i - w + 1
+    if (lower_bound < 1) {
+      output[i] <- NA_real_
+    } else {
+      output[i] <- FUN(x[lower_bound:i, ...])
+    }
+  }
+  output
+}
+
+# example
+# v <- seq(1:10)
+
+# compute a MA(2)
+# moving_fun(v, 2, mean)
+
+
+# make a new dataframe that has the moving average for each sample throughout the 
+# genome.  No worries if the window goes across chromosomes
+mv_ave_df2 <- c()
+for (i in 3:length(my_data)){  
+  # calculate the moving average for each column
+  moving_average <- moving_fun(my_data[,i], 50, mean)
+  # add this to a new dataframe
+  mv_ave_df2 <- cbind(mv_ave_df2,moving_average)
+  # rename the column to match the sample
+  colnames(mv_ave_df2)[i-2] = colnamez[i]
+}  
+
+# add chromosome and position data to mv_ave_df2
+mv_ave_df3 <- data.frame(mv_ave_df2,my_data$CHROM,my_data$POS)
+
+
+colnames(mv_ave_df3)[ncol(mv_ave_df3)-1] <- "CHROM"
+colnames(mv_ave_df3)[ncol(mv_ave_df3)] <- "POS"
+
+
+# calculate mean depth and sd per sample
+mean_depth<- c()
+sd_depth<- c()
+
+for (i in 3:length(my_data)){
+  x<- mean(my_data[,i],na.rm=T)
+  mean_depth<-append(mean_depth,x, after = length(mean_depth))
+  y<-sd(my_data[,i],na.rm=T)
+  sd_depth<-append(sd_depth,y, after = length(sd_depth))
+}  
+
+cutoff_vector <- c()
+
+
+# identify chr and positions in any sample that are >4 sd above that samples mean coverage
+# based on the rolling average
+# first make a vector with cutoff values for each sample
+for (i in 3:ncol(mv_ave_df3)){
+  cutoff <- mean_depth[i-2] + 4*sd_depth[i-2]
+  cutoff_vector <- append(cutoff_vector,cutoff, after=length(cutoff_vector))
+}
+
+mean_over_cuttoff <- mean_depth/cutoff_vector
+cutoff_data<-data.frame(1:length(mean_over_cuttoff),mean_over_cuttoff)
+p<-ggplot(cutoff_data)+
+  geom_point(aes(x=X1.length.mean_over_cuttoff.,y=mean_over_cuttoff))+
+  theme_bw()
+
+ggsave(filename = gsub("GVCF_DP.table","mean_over_cuttoff_plot.pdf",files),plot = p,width = 30,height = 10)
+# give the elements in cutoff_vector some names
+
+#manual
+#names(cutoff_vector) <- c('bru_PF707.DP','download.DP')
+
+
+# automated *******************************************
+#get sample names from mv_ave_df3
+xx<-names(mv_ave_df3)
+
+# select just sample names
+yy<-xx[1:(length(xx)-2)]
+
+# take sample names for vector names
+names(cutoff_vector)<-yy
+# zz<-sub("_cuttrim_sorted_final_l_only.bam.DP","",yy)
+
+# ****************************************************
+
+# now cycle through each column and identify chr and pos of the bad ones
+# manual
+#subtest <- NULL
+#subtest <- subset(mv_ave_df3, 
+#              JM_no_label1_Draken_CCACGT_cuttrim_sorted_final_l_only.bam.DP > cutoff_vector["JM_no_label1_Draken_CCACGT_cuttrim_sorted_final_l_only.bam.DP"]  | 
+#                JM_no_label2_Draken_TTCAGA_cuttrim_sorted_final_l_only.bam.DP > cutoff_vector["JM_no_label2_Draken_TTCAGA_cuttrim_sorted_final_l_only.bam.DP"] 
+# )
+
+# automated - Does the same thing as above**********
+sub <- NULL
+
+sub<-subset(mv_ave_df3,
+            get(yy)>min(cutoff_vector),
+            )
+
+
+# **************************************************
+
+# automated - only collects sites with a higher depth than that samples own cutoff*****************************************
+#sub <- NULL
+
+#for (i in yy) {
+  
+#  sub <- subset(mv_ave_df3,
+#               get(i) >cutoff_vector[i] 
+#  )
+#}
+# **************************************************
+
+dim(sub)
+dim(mv_ave_df3)
+
+
+to_file <- data.frame(sub$CHROM, sub$POS)
+
+# write to file
+write.table(to_file, gsub("GVCF_DP.table","positions_to_exclude.txt",files), append = FALSE, sep = "\t", dec = ".",
+            row.names = F, col.names = F,quote = FALSE)
+
+}
+```
+
+Run the above script for all the files- use this in the folder with dp table files
 
 ```bash
 #!/bin/sh

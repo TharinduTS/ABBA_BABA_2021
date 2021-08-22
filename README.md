@@ -29,7 +29,7 @@ To increase efficiency, I renamed chr 9_10 as chr 9 so I can submit job arrays
 find . -type f -name '*9_10*' | while read FILE ; do     newfile="$(echo ${FILE} |sed -e 's/9_10/9/g')" ;     mv "${FILE}" "${newfile}" ; done
 ```
 
-Submit array of jobs for different chromosomes to create depth tables - make sure memory yoy reserve is at least 4 times the memory in '-Xmx'
+Submit array of jobs for different chromosomes to create depth tables - make sure memory you reserve is at least 4 times the memory in '-Xmx'
 Create a saved scripts folder and save following script as create_depth_table.sh
 ```bash
 #!/bin/sh

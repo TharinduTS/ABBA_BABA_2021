@@ -2,6 +2,11 @@
 
 I received seperate VCF files for each of the chromosomes of Xenopus laevis. Going to filter them and do ABBA BABA analysis
 
+working on cedar
+```
+/scratch/premacht/ABBA_BABA_updated
+```
+
 Testing codes
 
 Create a reference genome folder and download reference genome in that folder
@@ -366,7 +371,8 @@ mv autosomes.bim.tmp autosomes.bim
 ```
 now run admixture for k values 2 to 5
 ```bash
-for i in {2..9}
+module load StdEnv/2020 nixpkgs/16.09 admixture/1.3.0
+for i in {2..5}
 do
  admixture --cv autsomes.bed $i > autosomeslog${i}.out
 done

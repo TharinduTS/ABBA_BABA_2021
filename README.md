@@ -364,4 +364,10 @@ we need to change the chr names in the .bim file because these cause problems fo
 awk -v OFS='\t' '{$1=0;print $0}' autosomes.bim > autosomes.bim.tmp
 mv autosomes.bim.tmp autosomes.bim
 ```
-
+now run admixture for k values 2 to 5
+```bash
+for i in {2..9}
+do
+ admixture --cv autsomes.bed $i > autosomeslog${i}.out
+done
+```

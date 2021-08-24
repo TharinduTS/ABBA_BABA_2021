@@ -371,6 +371,23 @@ mv autosomes.bim.tmp autosomes.bim
 ```
 now run admixture for k values 2 to 5 (may not need to load nixpkgs/16.09
 ```bash
-module load StdEnv/2020 nixpkgs/16.09 admixture/1.3.0
+#!/bin/sh
+#SBATCH --job-name=bwa_505
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=12:00:00
+#SBATCH --mem=32gb
+#SBATCH --output=bwa505.%J.out
+#SBATCH --error=bwa505.%J.err
+#SBATCH --account=def-ben
+
+#SBATCH --mail-user=premacht@mcmaster.ca
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=REQUEUE
+#SBATCH --mail-type=ALL
+
+module load StdEnv/2020 admixture/1.3.0
 for i in {2..5}; do  admixture --cv autosomes.bed $i > autosomeslog${i}.out; done
 ```

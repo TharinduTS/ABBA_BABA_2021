@@ -343,5 +343,25 @@ use bcftools to combine chromosomes into one file to feed into plink
 
 ```bash
 module load StdEnv/2020  gcc/9.3.0 bcftools/1.10.2
-bcftools concat -o all_chrs.vcf DB_new_chr1L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr1S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr2L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr2S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr3L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr3S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr4L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr4S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr5L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr5S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr6L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr6S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr7L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr7S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr8L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr8S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr9L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr9S_out_updated_positions_excluded.vcf.recode.vcf
+bcftools concat -o autosomes.vcf DB_new_chr1L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr1S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr2L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr2S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr3L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr3S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr4L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr4S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr5L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr5S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr6L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr6S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr7L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr7S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr8L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr8S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr9L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr9S_out_updated_positions_excluded.vcf.recode.vcf
+```
+compress and index
+```bash
+bgzip -c autosomes.vcf > autosomes.vcf.gz
+tabix -p vcf autosomes.vcf.gz
+```
+
+convert to geno format using plink , make a bed file and remove any SNP with no data for autosomes:
+
+```bash
+module load nixpkgs/16.09  intel/2016.4 plink/1.9b_5.2-x86_64
+
+plink --vcf ./autosomes.vcf.gz --make-bed --geno 0.999 --out ./autosomes --allow-extra-chr --const-fid
+```
+we need to change the chr names in the .bim file because these cause problems for admixture:
+
+```
+awk -v OFS='\t' '{$1=0;print $0}' autosomes.bim > autosomes.bim.tmp
+mv autosomes.bim.tmp autosomes.bim
+```
 

@@ -334,9 +334,14 @@ Create directory for admixture
 mkdir ADMIXTURE
 cd ADMIXTURE
 ```
+copy filtered vcfs here
+```bash
+cp -r ../positions_excluded/ .
+```
+
 use bcftools to combine chromosomes into one file to feed into plink
 
 ```bash
 module load StdEnv/2020  gcc/9.3.0 bcftools/1.10.2
-
+bcftools concat -o all_chrs.vcf DB_new_chr1L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr1S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr2L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr2S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr3L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr3S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr4L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr4S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr5L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr5S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr6L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr6S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr7L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr7S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr8L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr8S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr9L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr9S_out_updated_positions_excluded.vcf.recode.vcf
 

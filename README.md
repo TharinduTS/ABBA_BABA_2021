@@ -326,7 +326,17 @@ vcftools --vcf ./../XL_vcf_files/DB_new_chr${SLURM_ARRAY_TASK_ID}L_out_updated.v
 vcftools --vcf ./../XL_vcf_files/DB_new_chr${SLURM_ARRAY_TASK_ID}S_out_updated.vcf --out ./../positions_excluded/DB_new_chr${SLURM_ARRAY_TASK_ID}S_out_updated_positions_excluded.vcf --exclude-positions ./../positions_to_exclude/DB_new_chr${SLURM_ARRAY_TASK_ID}S_out_updated.vcf_positions_to_exclude.txt --recode
 
 ```
+## Admixture
 
+Create directory for admixture
 
+```bash
+mkdir ADMIXTURE
+cd ADMIXTURE
+```
+use bcftools to combine chromosomes into one file to feed into plink
+
+```bash
+module load StdEnv/2020  gcc/9.3.0 bcftools/1.10.2
 
 

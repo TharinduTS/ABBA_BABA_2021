@@ -369,11 +369,8 @@ we need to change the chr names in the .bim file because these cause problems fo
 awk -v OFS='\t' '{$1=0;print $0}' autosomes.bim > autosomes.bim.tmp
 mv autosomes.bim.tmp autosomes.bim
 ```
-now run admixture for k values 2 to 5
+now run admixture for k values 2 to 5 (may not need to load nixpkgs/16.09
 ```bash
 module load StdEnv/2020 nixpkgs/16.09 admixture/1.3.0
-for i in {2..5}
-do
- admixture --cv autsomes.bed $i > autosomeslog${i}.out
-done
+for i in {2..5}; do  admixture --cv autosomes.bed $i > autosomeslog${i}.out; done
 ```

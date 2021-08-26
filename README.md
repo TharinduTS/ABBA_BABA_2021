@@ -369,7 +369,7 @@ we need to change the chr names in the .bim file because these cause problems fo
 awk -v OFS='\t' '{$1=0;print $0}' autosomes.bim > autosomes.bim.tmp
 mv autosomes.bim.tmp autosomes.bim
 ```
-now run admixture for k values 2 to 5 (may not need to load nixpkgs/16.09
+now run admixture for k values 1 to 12 - using an array of jobs to make it faster
 ```bash
 #!/bin/sh
 #SBATCH --job-name=bwa_505
@@ -380,6 +380,7 @@ now run admixture for k values 2 to 5 (may not need to load nixpkgs/16.09
 #SBATCH --output=bwa505.%J.out
 #SBATCH --error=bwa505.%J.err
 #SBATCH --account=def-ben
+#SBATCH --array=1-12
 
 #SBATCH --mail-user=premacht@mcmaster.ca
 #SBATCH --mail-type=BEGIN
@@ -389,5 +390,7 @@ now run admixture for k values 2 to 5 (may not need to load nixpkgs/16.09
 #SBATCH --mail-type=ALL
 
 module load StdEnv/2020 admixture/1.3.0
-for i in {2..5}; do  admixture --cv autosomes.bed $i > autosomeslog${i}.out; done
+
+# submitting array
+ admixture --cv autosomes.bed ${SLURM_ARRAY_TASK_ID} > autosomeslog${SLURM_ARRAY_TASK_ID}.out
 ```

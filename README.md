@@ -416,18 +416,22 @@ we need to change the chr names in the .bim file because these cause problems fo
 awk -v OFS='\t' '{$1=0;print $0}' autosomes.bim > autosomes.bim.tmp
 mv autosomes.bim.tmp autosomes.bim
 ```
-now run admixture for k values 1 to 12 - using an array of jobs to make it faster
+create a directory to collect outputs from next step
+```bash
+mkdir outs_array
+```
+now run two job arrays to cal admixture(2:6 and 7:12-run array num,bers acccordingly)
 ```bash
 #!/bin/sh
 #SBATCH --job-name=bwa_505
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --time=12:00:00
-#SBATCH --mem=32gb
+#SBATCH --time=48:00:00
+#SBATCH --mem=16gb
 #SBATCH --output=bwa505.%J.out
 #SBATCH --error=bwa505.%J.err
 #SBATCH --account=def-ben
-#SBATCH --array=1-12
+#SBATCH --array=2-6
 
 #SBATCH --mail-user=premacht@mcmaster.ca
 #SBATCH --mail-type=BEGIN
@@ -439,5 +443,5 @@ now run admixture for k values 1 to 12 - using an array of jobs to make it faste
 module load StdEnv/2020 admixture/1.3.0
 
 # submitting array
- admixture --cv autosomes.bed ${SLURM_ARRAY_TASK_ID} > autosomeslog${SLURM_ARRAY_TASK_ID}.out
+ admixture --cv l_only.bed ${SLURM_ARRAY_TASK_ID} > ./outs_array/chrs_log${SLURM_ARRAY_TASK_ID}.out
 ```

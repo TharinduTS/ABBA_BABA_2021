@@ -343,40 +343,64 @@ copy filtered vcfs here
 ```bash
 cp -r ../positions_excluded/ .
 ```
+making directories for all chromosome data, l only, s only
+```bash
+mkdir all
+mkdir l_only
+mkdir s_only
+```
+inside all,
+make directories
+```bash 
+mkdir filtered_thinned_VCFs
+mkdir filtered_VCFs
+mkdir scripts
+mkdir combined_files
+```
+then copy all filtered vcfs in filtered_VCFs
 
-use bcftools to combine chromosomes into one file to feed into plink
+now thin the files to reduce the time needed for calculations.
+
+save this in scripts folder and run it
+
+```bash
+#!/bin/sh
+#SBATCH --job-name=bwa_505
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=1:00:00
+#SBATCH --mem=32gb
+#SBATCH --output=bwa505.%J.out
+#SBATCH --error=bwa505.%J.err
+#SBATCH --account=def-ben
+
+module load vcftools/0.1.16
+
+for i in ../filtered_VCFs/*.vcf;do
+j=${i#../filtered_VCFs/}
+
+vcftools --vcf ${i} --thin 1000 --out ../filtered_thinned_VCFs/${j%.vcf.recode.vcf}_thinned.vcf --recode ;done
+```
+
+use bcftools to combine chromosomes into one file to feed into plink(inside filtered_thinned_VCFs)
+you can get the list of files seperated by space by,
+```bash
+ls *.vcf | tr "\n" " "
+```
+then,
 
 ```bash
 module load StdEnv/2020  gcc/9.3.0 bcftools/1.10.2
-bcftools concat -o autosomes.vcf DB_new_chr1L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr1S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr2L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr2S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr3L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr3S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr4L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr4S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr5L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr5S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr6L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr6S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr7L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr7S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr8L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr8S_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr9L_out_updated_positions_excluded.vcf.recode.vcf DB_new_chr9S_out_updated_positions_excluded.vcf.recode.vcf
+bcftools concat -o ../combined_files/autosomes.vcf DB_new_chr1L_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr1S_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr2L_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr2S_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr3L_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr3S_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr4L_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr4S_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr5L_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr5S_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr6L_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr6S_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr7L_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr7S_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr8L_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr8S_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr9L_out_updated_positions_excluded_thinned.vcf.recode.vcf DB_new_chr9S_out_updated_positions_excluded_thinned.vcf.recode.vcf
 ```
-do the same for l only and s only - here I placed selected l chromosomes in filtered_VCFs/ did same for s only
+do the same for l only and s only 
 
-```
-bcftools concat -o l_only.vcf filtered_VCFs/*
-
-```
-in s_olny folder
-```
-bcftools concat -o s_only.vcf filtered_VCFs/*
-```
-
-compress and index
+compress and index(inside combined_files)
 ```bash
 bgzip -c autosomes.vcf > autosomes.vcf.gz
 tabix -p vcf autosomes.vcf.gz
 ```
-l_only
-```
-bgzip -c l_only.vcf > l_only.vcf.gz
-tabix -p vcf l_only.vcf.gz
-```
-s_only
 
-```
-bgzip -c s_only.vcf > s_only.vcf.gz
-tabix -p vcf s_only.vcf.gz
-```
 convert to geno format using plink , make a bed file and remove any SNP with no data for autosomes:
 
 ```bash

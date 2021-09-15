@@ -353,13 +353,34 @@ inside all,
 make directories
 ```bash 
 mkdir filtered_thinned_VCFs
+mkdir filtered_again_VCFs
 mkdir filtered_VCFs
 mkdir scripts
 mkdir combined_files
 ```
 then copy all filtered vcfs in filtered_VCFs
 
-now thin the files to reduce the time needed for calculations.
+try filtering the data to remove positions that have >50% missing data.  This might decrease the size of the data substantially.  If the file sizes are way smaller (e.g. half as large) then no need to thin any more- run this in scripts folder
+```bash
+#!/bin/sh
+#SBATCH --job-name=bwa_505
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=12:00:00
+#SBATCH --mem=32gb
+#SBATCH --output=bwa505.%J.out
+#SBATCH --error=bwa505.%J.err
+#SBATCH --account=def-ben
+
+module load vcftools/0.1.16
+
+for i in ../filtered_VCFs/*.vcf;do
+j=${i#../filtered_VCFs/}
+
+vcftools --vcf ${i} --max-missing 0.5 --out ../filtered_again_VCFs/${j%.vcf.recode.vcf}_missing_filtered.vcf --recode ;done
+```
+
+now thin the files to reduce the time needed for calculations. - If the size of the filtered files are not small enough
 
 save this in scripts folder and run it
 

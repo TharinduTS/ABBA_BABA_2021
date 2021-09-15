@@ -443,5 +443,5 @@ now run two job arrays to cal admixture(2:6 and 7:12-run array num,bers acccordi
 module load StdEnv/2020 admixture/1.3.0
 
 # submitting array
- admixture --cv l_only.bed ${SLURM_ARRAY_TASK_ID} > ./outs_array/chrs_log${SLURM_ARRAY_TASK_ID}.out
+ admixture --cv autosomes.bed ${SLURM_ARRAY_TASK_ID} > ./outs_array/chrs_log${SLURM_ARRAY_TASK_ID}.out
 ```

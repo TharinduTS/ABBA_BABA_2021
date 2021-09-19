@@ -444,6 +444,146 @@ mkdir outs_array
 ```
 now run two job arrays to cal admixture(2:6 and 7:12-run array num,bers acccordingly)
 ```bash
+PLINK v1.90b4.6 64-bit (15 Aug 2017)           www.cog-genomics.org/plink/1.9/
+(C) 2005-2017 Shaun Purcell, Christopher Chang   GNU General Public License v3
+Logging to ./autosomes.log.
+Options in effect:
+  --allow-extra-chr
+  --const-fid
+  --geno 0.999
+  --make-bed
+  --out ./autosomes
+  --vcf ./autosomes.vcf.gz
+
+257860 MB RAM detected; reserving 128930 MB for main workspace.
+Allocated 7259 MB successfully, after larger attempt(s) failed.
+--vcf: ./autosomes-temporary.bed + ./autosomes-temporary.bim +
+./autosomes-temporary.fam written.
+2823721 variants loaded from .bim file.
+96 people (0 males, 0 females, 96 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to ./autosomes.nosex .
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 96 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.821702.
+0 variants removed due to missing genotype data (--geno).
+2823721 variants and 96 people pass filters and QC.
+Note: No phenotypes present.
+--make-bed to ./autosomes.bed + ./autosomes.bim + ./autosomes.fam ... done.
+[premacht@cedar5 combined_files]$ clear
+
+[premacht@cedar5 combined_files]$ ls
+autosomes.bed  autosomes.log    autosomes.vcf.gz               cal_admixture_array_7_to_12.sh
+autosomes.bim  autosomes.nosex  autosomes.vcf.gz.tbi           outs_array
+autosomes.fam  autosomes.vcf    cal_admixture_array_2_to_6.sh
+[premacht@cedar5 combined_files]$ awk -v OFS='\t' '{$1=0;print $0}' autosomes.bim > autosomes.bim.tmp
+[premacht@cedar5 combined_files]$ mv autosomes.bim.tmp autosomes.bim
+[premacht@cedar5 combined_files]$ ls
+autosomes.bed  autosomes.log    autosomes.vcf.gz               cal_admixture_array_7_to_12.sh
+autosomes.bim  autosomes.nosex  autosomes.vcf.gz.tbi           outs_array
+autosomes.fam  autosomes.vcf    cal_admixture_array_2_to_6.sh
+[premacht@cedar5 combined_files]$ less cal_admixture_array_2_to_6.sh 
+[premacht@cedar5 combined_files]$ sbatch cal_admixture_array_2_to_6.sh 
+Submitted batch job 14392663
+[premacht@cedar5 combined_files]$ sbatch cal_admixture_array_7_to_12.sh 
+Submitted batch job 14392666
+[premacht@cedar5 combined_files]$ ls
+autosomes.bed         bwa505.14392663.out  bwa505.14393673.err  bwa505.14393749.out
+autosomes.bim         bwa505.14392666.err  bwa505.14393673.out  bwa505.14393750.err
+autosomes.fam         bwa505.14392666.out  bwa505.14393684.err  bwa505.14393750.out
+autosomes.log         bwa505.14393648.err  bwa505.14393684.out  cal_admixture_array_2_to_6.sh
+autosomes.nosex       bwa505.14393648.out  bwa505.14393719.err  cal_admixture_array_7_to_12.sh
+autosomes.vcf         bwa505.14393649.err  bwa505.14393719.out  outs_array
+autosomes.vcf.gz      bwa505.14393649.out  bwa505.14393725.err
+autosomes.vcf.gz.tbi  bwa505.14393671.err  bwa505.14393725.out
+bwa505.14392663.err   bwa505.14393671.out  bwa505.14393749.err
+[premacht@cedar5 combined_files]$ less bwa505.14392666.err
+[premacht@cedar5 combined_files]$ less cal_admixture_array_2_to_6.sh 
+[premacht@cedar5 combined_files]$ module load StdEnv/2020 admixture/1.3.0
+
+Lmod is automatically replacing "nixpkgs/16.09" with "gentoo/2020".
+
+Lmod has detected the following error:  The following module(s) are unknown: "gcccore/.9.3.0"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "gcccore/.9.3.0"
+
+Also make sure that all modulefiles written in TCL start with the string #%Module
+
+
+
+[premacht@cedar5 combined_files]$ module --ignore-cache load "gcccore/.9.3.0"
+Lmod has detected the following error:  The following module(s) are unknown: "gcccore/.9.3.0"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "gcccore/.9.3.0"
+
+Also make sure that all modulefiles written in TCL start with the string #%Module
+
+
+
+[premacht@cedar5 combined_files]$ module spider admixture
+
+-----------------------------------------------------------------------------------------------------------
+  admixture: admixture/1.3.0
+-----------------------------------------------------------------------------------------------------------
+    Description:
+      ADMIXTURE is a software tool for maximum likelihood estimation of individual ancestries from
+      multilocus SNP genotype datasets. It uses the same statistical model as STRUCTURE but calculates
+      estimates much more rapidly using a fast numerical optimization algorithm.
+
+    Properties:
+      Bioinformatic libraries/apps / Logiciels de bioinformatique
+
+    You will need to load all module(s) on any one of the lines below before the "admixture/1.3.0" module is available to load.
+
+      StdEnv/2020
+      nixpkgs/16.09
+ 
+    Help:
+      
+      Description
+      ===========
+      ADMIXTURE is a software tool for maximum likelihood estimation of individual ancestries from 
+      multilocus SNP genotype datasets. It uses the same statistical model as STRUCTURE but calculates estimates much 
+      more rapidly using a fast numerical optimization algorithm.
+      
+      
+      More information
+      ================
+       - Homepage: https://www.genetics.ucla.edu/software/admixture
+      
+
+
+ 
+
+[premacht@cedar5 combined_files]$ nixpkgs/16.09 admixture/1.3.0
+-bash: nixpkgs/16.09: No such file or directory
+[premacht@cedar5 combined_files]$ module load nixpkgs/16.09 admixture/1.3.0
+[premacht@cedar5 combined_files]$ module list
+
+Currently Loaded Modules:
+  1) nixpkgs/16.09  (S)   3) icc/.2016.4.258   (H)   5) intel/2016.4 (t)      7) plink/1.9b_5.2-x86_64 (bio)
+  2) gcccore/.5.4.0 (H)   4) ifort/.2016.4.258 (H)   6) gsl/2.6      (math)   8) admixture/1.3.0       (bio)
+
+  Where:
+   S:     Module is Sticky, requires --force to unload or purge
+   bio:   Bioinformatic libraries/apps / Logiciels de bioinformatique
+   math:  Mathematical libraries / Bibliothèques mathématiques
+   t:     Tools for development / Outils de développement
+   H:                Hidden Module
+
+Inactive Modules:
+  1) htslib/1.10.2   2) bcftools/1.10.2
+
+ 
+
+[premacht@cedar5 combined_files]$ vi cal_admixture_array_2_to_6.sh 
+[premacht@cedar5 combined_files]$ vi cal_admixture_array_7_to_12.sh 
+[premacht@cedar5 combined_files]$ less cal_admixture_array_2_to_6.sh 
+
 #!/bin/sh
 #SBATCH --job-name=bwa_505
 #SBATCH --nodes=1
@@ -462,7 +602,7 @@ now run two job arrays to cal admixture(2:6 and 7:12-run array num,bers acccordi
 #SBATCH --mail-type=REQUEUE
 #SBATCH --mail-type=ALL
 
-module load StdEnv/2020 admixture/1.3.0
+module load nixpkgs/16.09 admixture/1.3.0
 
 # submitting array
  admixture --cv autosomes.bed ${SLURM_ARRAY_TASK_ID} > ./outs_array/chrs_log${SLURM_ARRAY_TASK_ID}.out

@@ -465,11 +465,131 @@ now run two job arrays to cal admixture(2:6 and 7:12-run array num,bers acccordi
 module load nixpkgs/16.09 admixture/1.3.0
 
 # submitting array
- admixture --cv autosomes.bed ${SLURM_ARRAY_TASK_ID} > ./outs_array/log${SLURM_ARRAY_TASK_ID}.out
+ admixture --cv autosomes.bed ${SLURM_ARRAY_TASK_ID} > autosomeslog${SLURM_ARRAY_TASK_ID}.out
 ```
-# *** not finished ***
+now with all outputs in the same directory,
+
+1) Download the plotting Rscript 
+```bash
+wget https://github.com/speciationgenomics/scripts/raw/master/plotADMIXTURE.r
+chmod +x plotADMIXTURE.r
+```
+
+2) Create a sample list assigning all the samples into populations like following(here I assigned all of them to tropicalis)
+This is a tab seperated txt file with sample name in first column and species or population in second column.
+
+```txt
+2014_Inhaca_10_Inhaca_ATATGT_cuttrim_sorted.bam tropicalis
+2014_Inhaca_150_Inhaca_ATCGTA_cuttrim_sorted.bam        tropicalis
+2014_Inhaca_152_Inhaca_CATCGT_cuttrim_sorted.bam        tropicalis
+2014_Inhaca_24_Inhaca_CGCGGT_cuttrim_sorted.bam tropicalis
+2014_Inhaca_38_Inhaca_CTATTA_cuttrim_sorted.bam tropicalis
+2014_Inhaca_52_Inhaca_GCCAGT_cuttrim_sorted.bam tropicalis
+2014_Inhaca_65_Inhaca_GGAAGA_cuttrim_sorted.bam tropicalis
+946_Draken_TCGTT_cuttrim_sorted.bam     tropicalis
+993_Draken_GGTTGT_cuttrim_sorted.bam    tropicalis
+BJE2897_Lendu_TTCCTGGA_cuttrim_sorted.bam       tropicalis
+BJE3252_Cameroon_TATCGGGA_cuttrim_sorted.bam    tropicalis
+BJE3508_DeDorn_ATTGA_cuttrim_sorted.bam tropicalis
+BJE3509_DeDorn_CATCT_cuttrim_sorted.bam tropicalis
+BJE3510_DeDorn_CCTAG_cuttrim_sorted.bam tropicalis
+BJE3511_DeDorn_GAGGA_cuttrim_sorted.bam tropicalis
+BJE3512_DeDorn_GGAAG_cuttrim_sorted.bam tropicalis
+BJE3513_DeDorn_GTCAA_cuttrim_sorted.bam tropicalis
+BJE3514_DeDorn_TAATA_cuttrim_sorted.bam tropicalis
+BJE3515_DeDorn_TACAT_cuttrim_sorted.bam tropicalis
+BJE3525_Laigns_GAATTCA_cuttrim_sorted.bam       tropicalis
+BJE3526_Laigns_GAACTTG_cuttrim_sorted.bam       tropicalis
+BJE3527_Laigns_GGACCTA_cuttrim_sorted.bam       tropicalis
+BJE3528_Laigns_GTCGATT_cuttrim_sorted.bam       tropicalis
+BJE3529_Laigns_AACGCCT_cuttrim_sorted.bam       tropicalis
+BJE3530_Laigns_AATATGG_cuttrim_sorted.bam       tropicalis
+BJE3531_Laigns_ACGTGTT_cuttrim_sorted.bam       tropicalis
+BJE3532_Laigns_ATTAATT_cuttrim_sorted.bam       tropicalis
+BJE3533_Laigns_ATTGGAT_cuttrim_sorted.bam       tropicalis
+BJE3534_BW_CTCG_cuttrim_sorted.bam      tropicalis
+BJE3535_BW_TGCA_cuttrim_sorted.bam      tropicalis
+BJE3536_BW_ACTA_cuttrim_sorted.bam      tropicalis
+BJE3537_BW_CAGA_cuttrim_sorted.bam      tropicalis
+BJE3538_BW_AACT_cuttrim_sorted.bam      tropicalis
+BJE3539_BW_GCGT_cuttrim_sorted.bam      tropicalis
+BJE3541_BW_CGAT_cuttrim_sorted.bam      tropicalis
+BJE3542_BW_GTAA_cuttrim_sorted.bam      tropicalis
+BJE3543_BW_AGCG_cuttrim_sorted.bam      tropicalis
+BJE3544_BW_GATG_cuttrim_sorted.bam      tropicalis
+BJE3545_BW_TCAG_cuttrim_sorted.bam      tropicalis
+BJE3546_BW_TGCGA_cuttrim_sorted.bam     tropicalis
+BJE3547_GRNP_TAGGAA_cuttrim_sorted.bam  tropicalis
+BJE3548_GRNP_GCTCTA_cuttrim_sorted.bam  tropicalis
+BJE3549_GRNP_CCACAA_cuttrim_sorted.bam  tropicalis
+BJE3550_GRNP_CTTCCA_cuttrim_sorted.bam  tropicalis
+BJE3551_GRNP_GAGATA_cuttrim_sorted.bam  tropicalis
+BJE3552_GRNP_ATGCCT_cuttrim_sorted.bam  tropicalis
+BJE3553_GRNP_AGTGGA_cuttrim_sorted.bam  tropicalis
+BJE3554_GRNP_ACCTAA_cuttrim_sorted.bam  tropicalis
+BJE3573_VicW_CGCGGAGA_cuttrim_sorted.bam        tropicalis
+BJE3574_VicW_CGTGTGGT_cuttrim_sorted.bam        tropicalis
+BJE3575_Kimber_GTACTT_cuttrim_sorted.bam        tropicalis
+BJE3576_Kimber_GTTGAA_cuttrim_sorted.bam        tropicalis
+BJE3577_Kimber_TAACGA_cuttrim_sorted.bam        tropicalis
+BJE3578_Kimber_TGGCTA_cuttrim_sorted.bam        tropicalis
+BJE3579_Kimber_TATTTTT_cuttrim_sorted.bam       tropicalis
+BJE3580_Kimber_CTTGCTT_cuttrim_sorted.bam       tropicalis
+BJE3581_Kimber_ATGAAAG_cuttrim_sorted.bam       tropicalis
+BJE3582_Kimber_AAAAGTT_cuttrim_sorted.bam       tropicalis
+BJE3632_Niewou_CATAAGT_cuttrim_sorted.bam       tropicalis
+BJE3633_Niewou_CGCTGAT_cuttrim_sorted.bam       tropicalis
+BJE3640_Niewou_CGGTAGA_cuttrim_sorted.bam       tropicalis
+BJE3641_Niewou_CTACGGA_cuttrim_sorted.bam       tropicalis
+BJE3642_Niewou_GCGGAAT_cuttrim_sorted.bam       tropicalis
+BJE3644_Niewou_TAGCGGA_cuttrim_sorted.bam       tropicalis
+BJE3645_Niewou_TCGAAGA_cuttrim_sorted.bam       tropicalis
+BJE3647_Niewou_TCTGTGA_cuttrim_sorted.bam       tropicalis
+BJE3654_ThreeSis_TGCTGGA_cuttrim_sorted.bam     tropicalis
+BJE3655_ThreeSis_ACGACTAG_cuttrim_sorted.bam    tropicalis
+BJE3656_ThreeSis_TAGCATGG_cuttrim_sorted.bam    tropicalis
+BJE3657_ThreeSis_TAGGCCAT_cuttrim_sorted.bam    tropicalis
+BJE3658_ThreeSis_TGCAAGGA_cuttrim_sorted.bam    tropicalis
+BJE3659_ThreeSis_TGGTACGT_cuttrim_sorted.bam    tropicalis
+BJE3660_ThreeSis_TCTCAGTG_cuttrim_sorted.bam    tropicalis
+BJE3661_ThreeSis_CGCGATAT_cuttrim_sorted.bam    tropicalis
+BJE3662_ThreeSis_CGCCTTAT_cuttrim_sorted.bam    tropicalis
+BJE3663_ThreeSis_AACCGAGA_cuttrim_sorted.bam    tropicalis
+BJE3664_ThreeSis_ACAGGGA_cuttrim_sorted.bam     tropicalis
+BJE3665_ThreeSis_ACGTGGTA_cuttrim_sorted.bam    tropicalis
+BJE3666_ThreeSis_CCATGGGT_cuttrim_sorted.bam    tropicalis
+BJE3667_Citrus_CGCTT_cuttrim_sorted.bam tropicalis
+BJE3668_Citrus_TCACG_cuttrim_sorted.bam tropicalis
+BJE3669_Citrus_CTAGG_cuttrim_sorted.bam tropicalis
+BJE3670_Citrus_ACAAA_cuttrim_sorted.bam tropicalis
+BJE3671_Citrus_TTCTG_cuttrim_sorted.bam tropicalis
+BJE3672_Citrus_AGCCG_cuttrim_sorted.bam tropicalis
+BJE3673_Citrus_GTATT_cuttrim_sorted.bam tropicalis
+BJE3674_Citrus_CTGTA_cuttrim_sorted.bam tropicalis
+BJE3675_Citrus_ACCGT_cuttrim_sorted.bam tropicalis
+BJE3676_Citrus_GCTTA_cuttrim_sorted.bam tropicalis
+BJE3677_Citrus_GGTGT_cuttrim_sorted.bam tropicalis
+BJE3678_Citrus_AGGAT_cuttrim_sorted.bam tropicalis
+JM_no_label1_Draken_CCACGT_cuttrim_sorted.bam   tropicalis
+JM_no_label2_Draken_TTCAGA_cuttrim_sorted.bam   tropicalis
+RT5_Botsw_GGATTGGT_cuttrim_sorted.bam   tropicalis
+Vred_8_Vred_GCTGTGGA_cuttrim_sorted.bam tropicalis
+amnh17260_Nigeria_GTGAGGGT_cuttrim_sorted.bam   tropicalis
 
 ```
-Rscript plotADMIXTURE.r -p autosomes -i autosomes.list -k 2 -l tropicalis,testpop![image](https://user-images.githubusercontent.com/57451846/134287391-6f848001-a981-4098-803b-8d2a5210729a.png)
+Now you can plot admixture for different k values with following command after loading the r module
 
+```bash
+module load gcc/9.3.0 r/4.1.0
 ```
+run
+```bash
+Rscript plotADMIXTURE.r -p autosomes -i samples.list -k 11 -l tropicalis
+```
+here,
+'autosomes' is the prefix/common name among files
+'samples.list' is the file we created above with sample names and populations
+'11' is the top most k value to plot(min value is 2 by default. you can change it with flag -m XX)
+after '-l' you should list all populations in the text file you created seperated by commas (eg: tropicalis,laevis,pop2,pop3)
+
+This will output plots in tiff format

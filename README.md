@@ -586,6 +586,8 @@ run
 ```bash
 Rscript plotADMIXTURE.r -p autosomes -i samples.list -k 11 -l tropicalis
 ```
+If this asks you to install r packages, do that creating a personal library after opening R
+
 here,
 'autosomes' is the prefix/common name among files
 'samples.list' is the file we created above with sample names and populations

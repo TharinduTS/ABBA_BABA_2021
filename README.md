@@ -476,7 +476,12 @@ chmod +x plotADMIXTURE.r
 ```
 
 2) Create a sample list assigning all the samples into populations like following(here I assigned all of them to tropicalis)
-This is a tab seperated txt file with sample name in first column and species or population in second column.
+
+You can generate an automated list with this command if you have the population name in the sample name, seperated by an underscore as you can see in the following. '.nosex' file should be automatically crreated by the previous step.
+```bash
+awk '{split($2,name,"_"); print name[2],name[1]}' autosomes.nosex > autosomes.list
+```
+or you can create a tab seperated txt file with sample name in first column and species or population in second column using excel.
 
 ```txt
 2014_Inhaca_10_Inhaca_ATATGT_cuttrim_sorted.bam tropicalis

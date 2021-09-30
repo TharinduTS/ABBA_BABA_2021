@@ -27,8 +27,8 @@ mkdir scripts
 ```
 Load vcftools and list samples
 ```bash 
-module load StdEnv/2020
-module load vcftools/0.1.16
+module load StdEnv/2020  gcc/9.3.0
+module load bcftools/1.11
 bcftools query -l DB_new_chr9_10S_out.vcf_filtered.vcf.gz_filtered_removed.vcf
 ```
 

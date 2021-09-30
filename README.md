@@ -4,7 +4,63 @@ I received seperate VCF files for each of the chromosomes of Xenopus laevis. Goi
 
 working on cedar
 ```
-/scratch/premacht/ABBA_BABA_updated
+/scratch/premacht/ABBA_BABA_final
+```
+made three directories for three data sets and copied vcf files there
+
+```bash
+mkdir filtered_XLXGXM_radseq
+mkdir nonfiltered_XLXGXM_radseq
+mkdir XL
+```
+then copied the folder witgh VCF files in respective directories
+
+To increase efficiency, I renamed chr 9_10 as chr 9 so I can submit job arrays
+```bash
+find . -type f -name '*9_10*' | while read FILE ; do     newfile="$(echo ${FILE} |sed -e 's/9_10/9/g')" ;     mv "${FILE}" "${newfile}" ; done
+```
+
+In the directory for each dataset (showing XL here), created directories
+```bash
+mkdir sample_filtered_VCF
+mkdir scripts
+```
+Load vcftools and list samples
+```bash 
+module load StdEnv/2020
+module load vcftools/0.1.16
+bcftools query -l DB_new_chr9_10S_out.vcf_filtered.vcf.gz_filtered_removed.vcf
+```
+
+inside scripts
+
+writing this to remove messy sample
+
+```
+#!/bin/sh
+#SBATCH --job-name=bwa_505
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=4:00:00
+#SBATCH --mem=4gb
+#SBATCH --output=bwa505.%J.out
+#SBATCH --error=bwa505.%J.err
+#SBATCH --account=def-ben
+#SBATCH --array=1-9
+
+#SBATCH --mail-user=premacht@mcmaster.ca
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=REQUEUE
+#SBATCH --mail-type=ALL
+
+# for S only
+for i in ../XL_vcf_files/DB_new_chr${SLURM_ARRAY_TASK_ID}S_out.vcf_filtered.vcf.gz_filtered_removed.vcf; do vcftools --remove-indv BJE3632_Niewou_CATAAGT_cuttrim_sorted.bam --vcf ${i} --out ../sample_filtered_VCF/${i#../filtered_VCFs/}_s_rmved --recode;done
+
+#for L only
+for i in ../XL_vcf_files/DB_new_chr${SLURM_ARRAY_TASK_ID}L_out.vcf_filtered.vcf.gz_filtered_removed.vcf; do vcftools --remove-indv BJE3632_Niewou_CATAAGT_cuttrim_sorted.bam --vcf ${i} --out ../sample_filtered_VCF/${i#../filtered_VCFs/}_s_rmved --recode;done
+
 ```
 
 Testing codes
@@ -29,10 +85,7 @@ module load nixpkgs/16.09
 module load gatk/4.1.2.0
 gatk --java-options "-Xmx2G" CreateSequenceDictionary -R   XENLA_9.2_genome.fa
 ```
-To increase efficiency, I renamed chr 9_10 as chr 9 so I can submit job arrays
-```bash
-find . -type f -name '*9_10*' | while read FILE ; do     newfile="$(echo ${FILE} |sed -e 's/9_10/9/g')" ;     mv "${FILE}" "${newfile}" ; done
-```
+
 
 Submit array of jobs for different chromosomes to create depth tables - make sure memory you reserve is at least 4 times the memory in '-Xmx'
 Create a saved scripts folder and save following script as create_depth_table.sh

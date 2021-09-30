@@ -63,15 +63,16 @@ for i in ../XL_vcf_files/DB_new_chr${SLURM_ARRAY_TASK_ID}L_out.vcf_filtered.vcf.
 
 ```
 
-Testing codes
 
 Create a reference genome folder and download reference genome in that folder
 ```
+mkdir reference_genome
 wget http://ftp.xenbase.org/pub/Genomics/JGI/Xenla9.2/XENLA_9.2_genome.fa.gz
-
+mv XENLA_9.2_genome.fa.gz reference_genome/
 ```
 Unzip and index reference genome
 ```bash
+cd reference_genome
 gunzip XENLA_9.2_genome.fa
 
 module load StdEnv/2020 samtools/1.12

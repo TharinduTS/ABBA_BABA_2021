@@ -393,24 +393,15 @@ Create directory for admixture
 mkdir ADMIXTURE
 cd ADMIXTURE
 ```
-copy filtered vcfs here
-```bash
-cp -r ../positions_excluded/ .
-```
 
-make directories
+make needed directories and copy positions excluded VCFs to filtered VCFs
 ```bash 
 mkdir scripts
 mkdir combined_files
-```
-and this only if other filtering steps are not enough ***********************************************
-```bash
-mkdir filtered_again_VCFs
 mkdir filtered_VCFs
-mkdir filtered_thinned_VCFs
+mkdir filtered_again_VCFs
+cp -r ../positions_excluded/* filtered_VCFs/ 
 ```
-then copy all filtered vcfs in filtered_VCFs
-
 try filtering the data to remove positions that have >50% missing data.  This might decrease the size of the data substantially.  If the file sizes are way smaller (e.g. half as large) then no need to thin any more- run this in scripts folder
 ```bash
 #!/bin/sh
@@ -430,6 +421,10 @@ for i in ../filtered_VCFs/*.vcf;do
 j=${i#../filtered_VCFs/}
 
 vcftools --vcf ${i} --max-missing 0.5 --out ../filtered_again_VCFs/${j%.vcf.recode.vcf}_missing_filtered.vcf --recode ;done
+```
+and this only if other filtering steps are not enough ***********************************************
+```bash
+mkdir filtered_thinned_VCFs
 ```
 
 now thin the files to reduce the time needed for calculations. - If the size of the filtered files are not small enough

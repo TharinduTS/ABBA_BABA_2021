@@ -454,16 +454,16 @@ extra filtering ends here ******************************************************
 Run this on admixture folder with final filtered vcf files to make seperate combined files for seperate genomes
 making directories for all chromosome data, l only, s only
 
-MAKE SURE TO CHANGE 'positions_excluded' TO WHATEVER THE DIRECTORY WITH FINAL FILTERED VCFS
+MAKE SURE TO CHANGE 'filtered_again_VCFs' TO WHATEVER THE DIRECTORY WITH FINAL FILTERED VCFS
 ```bash
 cd combined_files
 module load StdEnv/2020  intel/2020.1.217 bcftools/1.11
 mkdir all
-bcftools concat -o all/autosomes.vcf $(ls ../positions_excluded/*.vcf | tr "\n" " ")
+bcftools concat -o all/autosomes.vcf $(ls ../filtered_again_VCFs/*.vcf | tr "\n" " ")
 mkdir l_only
-bcftools concat -o l_only/autosomes.vcf $(ls ../positions_excluded/*L*.vcf | tr "\n" " ")
+bcftools concat -o l_only/autosomes.vcf $(ls ../filtered_again_VCFs/*L*.vcf | tr "\n" " ")
 mkdir s_only
-bcftools concat -o s_only/autosomes.vcf $(ls ../positions_excluded/*S*.vcf | tr "\n" " ")
+bcftools concat -o s_only/autosomes.vcf $(ls ../filtered_again_VCFs/*S*.vcf | tr "\n" " ")
 ```
 
 

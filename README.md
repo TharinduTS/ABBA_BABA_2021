@@ -397,20 +397,17 @@ copy filtered vcfs here
 ```bash
 cp -r ../positions_excluded/ .
 ```
-making directories for all chromosome data, l only, s only
-```bash
-mkdir all
-mkdir l_only
-mkdir s_only
-```
-inside all,
+
 make directories
 ```bash 
-mkdir filtered_thinned_VCFs
 mkdir filtered_again_VCFs
 mkdir filtered_VCFs
 mkdir scripts
 mkdir combined_files
+```
+and this only if other filtering steps are not enough
+```bash
+mkdir filtered_thinned_VCFs
 ```
 then copy all filtered vcfs in filtered_VCFs
 
@@ -456,17 +453,23 @@ j=${i#../filtered_VCFs/}
 
 vcftools --vcf ${i} --thin 1000 --out ../filtered_thinned_VCFs/${j%.vcf.recode.vcf}_thinned.vcf --recode ;done
 ```
+making directories for all chromosome data, l only, s only
+```bash
+mkdir all
+mkdir l_only
+mkdir s_only
+```
 
-use bcftools to combine chromosomes into one file to feed into plink(inside filtered_thinned_VCFs)
+use bcftools to combine chromosomes into one file to feed into plink(inside filtered_thinned_VCFs) and then place them in respective directories.
 you can get the list of files seperated by space by,
 ```bash
 ls *.vcf | tr "\n" " "
 ```
-then,
+then run this(and respective chr lists for L nd S -changing output path) in the folder with final filtered outputs,
 
 ```bash
 module load StdEnv/2020  gcc/9.3.0 bcftools/1.10.2
-bcftools concat -o ../combined_files/autosomes.vcf DB_new_chr1L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr1S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr2L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr2S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr3L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr3S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr4L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr4S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr5L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr5S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr6L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr6S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr7L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr7S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr8L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr8S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr9L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr9S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf
+bcftools concat -o ../all/autosomes.vcf DB_new_chr1L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr1S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr2L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr2S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr3L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr3S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr4L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr4S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr5L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr5S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr6L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr6S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr7L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr7S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr8L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr8S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr9L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr9S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf
 
 ```
 do the same for l only and s only 

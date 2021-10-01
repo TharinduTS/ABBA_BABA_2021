@@ -400,13 +400,13 @@ cp -r ../positions_excluded/ .
 
 make directories
 ```bash 
-mkdir filtered_again_VCFs
-mkdir filtered_VCFs
 mkdir scripts
 mkdir combined_files
 ```
-and this only if other filtering steps are not enough
+and this only if other filtering steps are not enough ***********************************************
 ```bash
+mkdir filtered_again_VCFs
+mkdir filtered_VCFs
 mkdir filtered_thinned_VCFs
 ```
 then copy all filtered vcfs in filtered_VCFs
@@ -459,6 +459,7 @@ mkdir all
 mkdir l_only
 mkdir s_only
 ```
+***************************************************************************
 
 use bcftools to combine chromosomes into one file to feed into plink(inside filtered_thinned_VCFs) and then place them in respective directories.
 you can get the list of files seperated by space by,

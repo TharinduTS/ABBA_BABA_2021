@@ -459,7 +459,7 @@ extra filtering ends here ******************************************************
 Run this on admixture folder with final filtered vcf files to make seperate combined files for seperate genomes
 making directories for all chromosome data, l only, s only
 
-MAKE SURE TO CHANGE 'combined_files' TO WHATEVER THE DIRECTORY WITH FINAL FILTERED VCFS
+MAKE SURE TO CHANGE 'positions_excluded' TO WHATEVER THE DIRECTORY WITH FINAL FILTERED VCFS
 ```bash
 cd combined_files
 module load StdEnv/2020  intel/2020.1.217 bcftools/1.11

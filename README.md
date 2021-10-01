@@ -453,13 +453,15 @@ j=${i#../filtered_VCFs/}
 
 vcftools --vcf ${i} --thin 1000 --out ../filtered_thinned_VCFs/${j%.vcf.recode.vcf}_thinned.vcf --recode ;done
 ```
+extra filtering ends here ***************************************************************************
+
 making directories for all chromosome data, l only, s only
 ```bash
 mkdir all
 mkdir l_only
 mkdir s_only
 ```
-***************************************************************************
+
 
 use bcftools to combine chromosomes into one file to feed into plink(inside filtered_thinned_VCFs) and then place them in respective directories.
 you can get the list of files seperated by space by,

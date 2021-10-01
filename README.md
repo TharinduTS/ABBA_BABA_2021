@@ -423,6 +423,7 @@ try filtering the data to remove positions that have >50% missing data.  This mi
 #SBATCH --error=bwa505.%J.err
 #SBATCH --account=def-ben
 
+module load StdEnv/2020
 module load vcftools/0.1.16
 
 for i in ../filtered_VCFs/*.vcf;do
@@ -455,48 +456,35 @@ vcftools --vcf ${i} --thin 1000 --out ../filtered_thinned_VCFs/${j%.vcf.recode.v
 ```
 extra filtering ends here ***************************************************************************
 
+Run this on admixture folder with final filtered vcf files to make seperate combined files for seperate genomes
 making directories for all chromosome data, l only, s only
 ```bash
+cd combined_files
+module load StdEnv/2020  intel/2020.1.217 bcftools/1.11
 mkdir all
+bcftools concat -o all/autosomes.vcf $(ls ../positions_excluded/*.vcf | tr "\n" " ")
 mkdir l_only
+bcftools concat -o l_only/autosomes.vcf $(ls ../positions_excluded/*L*.vcf | tr "\n" " ")
 mkdir s_only
+bcftools concat -o s_only/autosomes.vcf $(ls ../positions_excluded/*S*.vcf | tr "\n" " ")
 ```
 
-
-use bcftools to combine chromosomes into one file to feed into plink(inside filtered_thinned_VCFs) and then place them in respective directories.
-you can get the list of files seperated by space by,
-```bash
-ls *.vcf | tr "\n" " "
-```
-then run this(and respective chr lists for L nd S -changing output path) in the folder with final filtered outputs,
-
-```bash
-module load StdEnv/2020  gcc/9.3.0 bcftools/1.10.2
-bcftools concat -o ../all/autosomes.vcf DB_new_chr1L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr1S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr2L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr2S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr3L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr3S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr4L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr4S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr5L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr5S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr6L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr6S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr7L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr7S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr8L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr8S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr9L_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf DB_new_chr9S_out_updated_positions_excluded_missing_filtered.vcf.recode.vcf
-
-```
-do the same for l only and s only 
 
 compress and index(inside combined_files)
+convert to geno format using plink , make a bed file and remove any SNP with no data for autosomes
+do all these for l_only and s_only seperately
+and we need to change the chr names in the .bim file because these cause problems for admixture:
 ```bash
+for i in all l_only s_only; do
+module load StdEnv/2020  intel/2020.1.217 bcftools/1.11
+cd ${i}
 bgzip -c autosomes.vcf > autosomes.vcf.gz
 tabix -p vcf autosomes.vcf.gz
-```
-
-convert to geno format using plink , make a bed file and remove any SNP with no data for autosomes:
-
-```bash
 module load nixpkgs/16.09  intel/2016.4 plink/1.9b_5.2-x86_64
-
 plink --vcf ./autosomes.vcf.gz --make-bed --geno 0.999 --out ./autosomes --allow-extra-chr --const-fid
-```
-do all these for l_only and s_only seperately
-
-we need to change the chr names in the .bim file because these cause problems for admixture:
-
-```
 awk -v OFS='\t' '{$1=0;print $0}' autosomes.bim > autosomes.bim.tmp
 mv autosomes.bim.tmp autosomes.bim
+cd .. ; done
 ```
 create a directory to collect outputs from next step
 ```bash

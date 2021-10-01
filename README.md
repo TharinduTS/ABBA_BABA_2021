@@ -485,10 +485,14 @@ module load nixpkgs/16.09  intel/2016.4 plink/1.9b_5.2-x86_64
 plink --vcf ./autosomes.vcf.gz --make-bed --geno 0.999 --out ./autosomes --allow-extra-chr --const-fid
 awk -v OFS='\t' '{$1=0;print $0}' autosomes.bim > autosomes.bim.tmp
 mv autosomes.bim.tmp autosomes.bim
-cd .. 
-mkdir outs_array; done
+cd .. ; done
 ```
-now run two job arrays to cal admixture(2:6 and 7:12-run array num,bers acccordingly)
+now save two job arrays to cal admixture(2:6 and 7:12-run array numbers acccordingly) in scripts folder changing array numbers
+
+as
+cal_admix_2to6.sh
+
+
 ```bash
 #!/bin/sh
 #SBATCH --job-name=bwa_505
@@ -513,9 +517,48 @@ module load nixpkgs/16.09 admixture/1.3.0
 # submitting array
  admixture --cv autosomes.bed ${SLURM_ARRAY_TASK_ID} > autosomeslog${SLURM_ARRAY_TASK_ID}.out
 ```
+and
+cal_admix_7to13.sh
+```bash
+#!/bin/sh
+#SBATCH --job-name=bwa_505
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=48:00:00
+#SBATCH --mem=16gb
+#SBATCH --output=bwa505.%J.out
+#SBATCH --error=bwa505.%J.err
+#SBATCH --account=def-ben
+#SBATCH --array=7-13
+
+#SBATCH --mail-user=premacht@mcmaster.ca
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=REQUEUE
+#SBATCH --mail-type=ALL
+
+module load nixpkgs/16.09 admixture/1.3.0
+
+# submitting array
+ admixture --cv autosomes.bed ${SLURM_ARRAY_TASK_ID} > autosomeslog${SLURM_ARRAY_TASK_ID}.out
+ ```
+now run both of them in all three genome types(all,l and s) by pasting this inside directory 'combined_files'
+
+```bash
+for i in all l_only s_only; do  
+cd ${i} 
+cp ../../scripts/cal_admix_2to6.sh . 
+cp ../../scripts/cal_admix_7to13.sh . 
+sbatch cal_admix_2to6.sh 
+sbatch cal_admix_7to13.sh
+cd ..; done
+
+```
+
 now with all outputs in the same directory,
 
-1) Download the plotting Rscript 
+1) Download the plotting Rscript - NOT DOING THIS HERE. USED CUSTOMIZED PLOTS INSTEAD AS IN NEXT STEP
 ```bash
 wget https://github.com/speciationgenomics/scripts/raw/master/plotADMIXTURE.r
 chmod +x plotADMIXTURE.r

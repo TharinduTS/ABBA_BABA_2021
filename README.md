@@ -474,6 +474,7 @@ compress and index(inside combined_files)
 convert to geno format using plink , make a bed file and remove any SNP with no data for autosomes
 do all these for l_only and s_only seperately
 and we need to change the chr names in the .bim file because these cause problems for admixture:
+create a directory to collect outputs from next step
 ```bash
 for i in all l_only s_only; do
 module load StdEnv/2020  intel/2020.1.217 bcftools/1.11
@@ -484,11 +485,8 @@ module load nixpkgs/16.09  intel/2016.4 plink/1.9b_5.2-x86_64
 plink --vcf ./autosomes.vcf.gz --make-bed --geno 0.999 --out ./autosomes --allow-extra-chr --const-fid
 awk -v OFS='\t' '{$1=0;print $0}' autosomes.bim > autosomes.bim.tmp
 mv autosomes.bim.tmp autosomes.bim
-cd .. ; done
-```
-create a directory to collect outputs from next step
-```bash
-mkdir outs_array
+cd .. 
+mkdir outs_array; done
 ```
 now run two job arrays to cal admixture(2:6 and 7:12-run array num,bers acccordingly)
 ```bash

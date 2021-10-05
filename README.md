@@ -571,7 +571,7 @@ now with all outputs in the same directory,
 wget https://github.com/speciationgenomics/scripts/raw/master/plotADMIXTURE.r
 chmod +x plotADMIXTURE.r
 ```
-**********************
+skip ends here**********************
 2) Create a sample list assigning all the samples into populations like following(here I assigned all of them to tropicalis)
 
  you can create a tab seperated txt file with sample name in first column and species or population in second column using excel.
@@ -672,6 +672,7 @@ JM_no_label2_Draken_TTCAGA_cuttrim_sorted.bam	Draken
 RT5_Botsw_GGATTGGT_cuttrim_sorted.bam	Other
 Vred_8_Vred_GCTGTGGA_cuttrim_sorted.bam	Vred
 amnh17260_Nigeria_GTGAGGGT_cuttrim_sorted.bam	Other
+```
 
 skip this part if you are using customized plots *********************
 Now you can plot admixture for different k values with following command after loading the r module

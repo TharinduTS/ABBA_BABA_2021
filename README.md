@@ -863,17 +863,20 @@ tiff(file=paste0(opt$outPrefix,".tiff"),width = 2000, height = 1300,res=200)
  col12<-"brown"
  
  #create color palettes for each k value
+ # YOU CAN CHANGE COLOR ORDER FOR EACH PLOT HERE
  col_palette_k2<-c(col1,col2)
  col_palette_k3<-c(col3,col2,col1)
  col_palette_k4<-c(col1,col2,col3,col4)
  col_palette_k5<-c(col1,col3,col2,col5,col4)
- col_palette_k6<-c(col1,col2,col6,col5,col4,col3)
- col_palette_k7<-c(col1,col7,col5,col6,col4,col3,col2)
- col_palette_k8<-c(col5,col8,col1,col7,col6,col3,col4,col2)
- col_palette_k9<-c(col8,col6,col7,col2,col5,col4,col3,col1,col9)
- col_palette_k10<-c(col8,col7,col4,col10,col2,col9,col6,col1,col3,col5)
- col_palette_k11<-c(col6,col10,col2,col4,col1,col7,col9,col8,col3,col11,col5)
- col_palette_k12<-c(col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11,col12)
+ col_palette_k6<-c(col1,col6,col2,col5,col4,col3)
+ col_palette_k7<-c(col6,col7,col5,col1,col4,col3,col2)
+ col_palette_k8<-c(col5,col8,col6,col7,col1,col3,col4,col2)
+ col_palette_k9<-c(col4,col7,col1,col2,col5,col8,col3,col9,col6)
+ col_palette_k10<-c(col1,col4,col7,col8,col10,col9,col2,col6,col3,col5)
+ col_palette_k11<-c(col2,col11,col7,col4,col9,col8,col6,col10,col3,col1,col5)
+ 
+ #create and use more palettes if you want more plots
+ #col_palette_k12<-c(col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11,col12)
  
  # make a variable with full sample names 
  full_sample_names<-labels$ind[order(labels$n)]
@@ -1077,4 +1080,5 @@ tiff(file=paste0(opt$outPrefix,".tiff"),width = 2000, height = 1300,res=200)
  print("done")
 }
  
+```
  

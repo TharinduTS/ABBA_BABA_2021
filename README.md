@@ -423,6 +423,7 @@ j=${i#../filtered_VCFs/}
 vcftools --vcf ${i} --max-missing 0.5 --out ../filtered_again_VCFs/${j%.vcf.recode.vcf}_missing_filtered.vcf --recode ;done
 ```
 and this only if other filtering steps are not enough ***********************************************
+
 ```bash
 mkdir filtered_thinned_VCFs
 ```
@@ -450,6 +451,7 @@ j=${i#../filtered_VCFs/}
 vcftools --vcf ${i} --thin 1000 --out ../filtered_thinned_VCFs/${j%.vcf.recode.vcf}_thinned.vcf --recode ;done
 ```
 extra filtering ends here ***************************************************************************
+
 
 Run this on admixture folder with final filtered vcf files to make seperate combined files for seperate genomes
 making directories for all chromosome data, l only, s only
@@ -564,6 +566,7 @@ rsync -ap --exclude="*.vcf*" --exclude="*.sh" --exclude="bwa*" combined_files/* 
 Then download selected files
 
 Skip this part if you are using customized plots as shown later **************************
+
 now with all outputs in the same directory,
 
 1) Download the plotting Rscript 
@@ -572,6 +575,7 @@ wget https://github.com/speciationgenomics/scripts/raw/master/plotADMIXTURE.r
 chmod +x plotADMIXTURE.r
 ```
 skip ends here**********************
+
 2) Create a sample list assigning all the samples into populations like following(here I assigned all of them to tropicalis)
 
  you can create a tab seperated txt file with sample name in first column and species or population in second column using excel.
@@ -675,6 +679,8 @@ amnh17260_Nigeria_GTGAGGGT_cuttrim_sorted.bam	Other
 ```
 
 skip this part if you are using customized plots *********************
+
+
 Now you can plot admixture for different k values with following command after loading the r module
 
 ```bash
@@ -694,6 +700,8 @@ after '-l' you should list all populations in the text file you created seperate
 
 This will output plots in tiff format
 Default plots end here ***********************************************************************************
+
+
 # Customized script
 
 I wanted a bunch of customization in the plots given by the default R script. So I wrote the following to be used in local machine R studio.

@@ -1101,6 +1101,59 @@ you can copy filtered vcf files from previous analysis keeping the parent direct
 ```bash
 find . -name '*.vcf.gz' -exec cp --parents \{\} ../../ABBA_BABA_test/ \;
 ```
+make a directory for scripts
+```bash
+mkdir scripts
+```
+save this script as Beagle.sh in the scripts folder first as
+
+Beagle.sh
+```bash
+#!/bin/sh
+#SBATCH --job-name=beagle
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=3:00:00
+#SBATCH --mem=64gb
+#SBATCH --output=bwa.%J.out
+#SBATCH --error=bwa.%J.err
+#SBATCH --account=def-ben
+
+#SBATCH --mail-user=premacht@mcmaster.ca
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=REQUEUE
+#SBATCH --mail-type=ALL
+
+# sbatch Beagle.sh autosomes
+
+module load java
+
+java -Xmx12g -jar ./beagle.28Jun21.220.jar gt=out.vcf out=autosomes_phased.vcf impute=true
+```
+and download beagle in scripts folder
+```bash
+wget beagle.28Jun21.220.jar .
+```
+
+I filtered for the DP and the genotypes that did not pass the filter were set to ./.
+javascripts I have to use next cannot handle this. Therefore I have to edit those characters first. I am going to run this in the directory with subdirectories for subgenomes so this would
+
+edit the characters
+copy needed scripts
+and then submit jobs to phase VCF files for all three genomes
+
+```bash
+for i in all l_only s_only; do
+cd ${i}
+zcat autosomes.vcf.gz | perl -pe "s/\s\.:/\t.\/.:/g"> out.vcf
+cp ../scripts/Beagle.sh .
+cp ../scripts/beagle.28Jun21.220.jar .
+sbatch Beagle.sh .
+cd .. ; done
+```
+
 load python environment needed for .py script
 ```bash
 module load python/3.8.2
@@ -1109,7 +1162,10 @@ source ~/ENV/bin/activate
 pip install --no-index --upgrade pip
 pip install numpy --no-index
 ```
+
 use following once you are done and want to exit the environment
+
+
 ```
 (ENV) [name@server ~] deactivate
 ```

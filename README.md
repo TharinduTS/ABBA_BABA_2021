@@ -1087,7 +1087,18 @@ Starting ABBA BABA below
 
 # ABBA BABA
 
+I am working in a newly created directory inside ABBA_BABA_final as
+```
+mkdir ABBA_BABA_test
+cd ABBA_BABA_test
+```
+
 clone genomics general scripts
 ```bash
 git clone https://github.com/simonhmartin/genomics_general
 ```
+you can copy filtered vcf files from previous analysis keeping the parent directory structure to here by pasting this in the parent directory with vcf files
+```bash
+find . -name '*.vcf.gz' -exec cp --parents \{\} ../../ABBA_BABA_test/ \;
+```
+

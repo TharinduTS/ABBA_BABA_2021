@@ -1097,13 +1097,17 @@ clone genomics general scripts
 ```bash
 git clone https://github.com/simonhmartin/genomics_general
 ```
-you can copy filtered vcf files from previous analysis keeping the parent directory structure to here by pasting this in the parent directory with vcf files
+you can copy filtered vcf files from previous analysis keeping the parent directory structure to here by pasting this
+this does the directory changes as well
 ```bash
+cd ../ADMIXTURE/combined_files/
 find . -name '*.vcf.gz' -exec cp --parents \{\} ../../ABBA_BABA_test/ \;
+cd ../../ABBA_BABA_test/
 ```
 make a directory for scripts
 ```bash
 mkdir scripts
+cd scripts
 ```
 save this script as Beagle.sh in the scripts folder first as
 
@@ -1135,6 +1139,7 @@ java -Xmx12g -jar ./beagle.28Jun21.220.jar gt=out.vcf out=autosomes_phased.vcf i
 and download beagle in scripts folder
 ```bash
 wget https://faculty.washington.edu/browning/beagle/beagle.28Jun21.220.jar .
+cd ..
 ```
 
 I filtered for the DP and the genotypes that did not pass the filter were set to ./.

@@ -1082,3 +1082,12 @@ tiff(file=paste0(opt$outPrefix,".tiff"),width = 2000, height = 1300,res=200)
  
 ```
  
+Finished Admixture above
+Starting ABBA BABA below
+
+# ABBA BABA
+
+clone genomics general scripts
+```bash
+git clone https://github.com/simonhmartin/genomics_general
+```

@@ -1113,7 +1113,7 @@ Beagle.sh
 #SBATCH --job-name=beagle
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --time=3:00:00
+#SBATCH --time=12:00:00
 #SBATCH --mem=64gb
 #SBATCH --output=bwa.%J.out
 #SBATCH --error=bwa.%J.err
@@ -1134,11 +1134,12 @@ java -Xmx12g -jar ./beagle.28Jun21.220.jar gt=out.vcf out=autosomes_phased.vcf i
 ```
 and download beagle in scripts folder
 ```bash
-wget beagle.28Jun21.220.jar .
+wget https://faculty.washington.edu/browning/beagle/beagle.28Jun21.220.jar .
 ```
 
 I filtered for the DP and the genotypes that did not pass the filter were set to ./.
 javascripts I have to use next cannot handle this. Therefore I have to edit those characters first. I am going to run this in the directory with subdirectories for subgenomes so this would
+
 
 edit the characters
 copy needed scripts

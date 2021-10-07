@@ -1101,4 +1101,15 @@ you can copy filtered vcf files from previous analysis keeping the parent direct
 ```bash
 find . -name '*.vcf.gz' -exec cp --parents \{\} ../../ABBA_BABA_test/ \;
 ```
-
+load python environment needed for .py script
+```bash
+module load python/3.8.2
+virtualenv --no-download ~/ENV
+source ~/ENV/bin/activate
+pip install --no-index --upgrade pip
+pip install numpy --no-index
+```
+use following once you are done and want to exit the environment
+```
+(ENV) [name@server ~] deactivate
+```

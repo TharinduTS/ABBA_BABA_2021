@@ -1168,6 +1168,13 @@ source ~/ENV/bin/activate
 pip install --no-index --upgrade pip
 pip install numpy --no-index
 ```
+now create geno files with the phased vcf files for all genomes like before
+```bash
+for i in all l_only s_only; do
+cd ${i}
+./../genomics_general/VCF_processing/parseVCF.py -i autosomes_phased.vcf.vcf.gz -o autosomes_phased.geno
+cd .. ; done
+```
 
 use following once you are done and want to exit the environment
 

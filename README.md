@@ -1182,3 +1182,13 @@ use following once you are done and want to exit the environment
 ```
 (ENV) [name@server ~] deactivate
 ```
+Then it is necessary to swap any astrisks with Ns:(so again running this in the folder ABBA_BABA_test with all/ l_only s_only)
+```bash
+for i in all l_only s_only; do
+cd ${i}
+sed -i 's/\*/N/g' autosomes_phased.geno
+gzip -c autosomes_phased.geno >processed_final_geno.gz
+cd .. ; done
+```
+
+

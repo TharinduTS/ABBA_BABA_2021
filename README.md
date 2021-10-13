@@ -1191,4 +1191,150 @@ gzip -c autosomes_phased.geno >processed_final_geno.gz
 cd .. ; done
 ```
 
+now we are ready to do the ABBA_BABA test
+
+first create a file with populations like this and put it in scripts folder
+
+pop_list1.txt
+```txt
+2014_Inhaca_10_Inhaca_ATATGT_cuttrim_sorted.bam	Inhaca
+2014_Inhaca_150_Inhaca_ATCGTA_cuttrim_sorted.bam	Inhaca
+2014_Inhaca_152_Inhaca_CATCGT_cuttrim_sorted.bam	Inhaca
+2014_Inhaca_24_Inhaca_CGCGGT_cuttrim_sorted.bam	Inhaca
+2014_Inhaca_38_Inhaca_CTATTA_cuttrim_sorted.bam	Inhaca
+2014_Inhaca_52_Inhaca_GCCAGT_cuttrim_sorted.bam	Inhaca
+2014_Inhaca_65_Inhaca_GGAAGA_cuttrim_sorted.bam	Inhaca
+946_Draken_TCGTT_cuttrim_sorted.bam	KD
+993_Draken_GGTTGT_cuttrim_sorted.bam	KD
+BJE2897_Lendu_TTCCTGGA_cuttrim_sorted.bam	Other
+BJE3252_Cameroon_TATCGGGA_cuttrim_sorted.bam	Other
+BJE3508_DeDorn_ATTGA_cuttrim_sorted.bam	DCGV
+BJE3509_DeDorn_CATCT_cuttrim_sorted.bam	DCGV
+BJE3510_DeDorn_CCTAG_cuttrim_sorted.bam	DCGV
+BJE3511_DeDorn_GAGGA_cuttrim_sorted.bam	DCGV
+BJE3512_DeDorn_GGAAG_cuttrim_sorted.bam	DCGV
+BJE3513_DeDorn_GTCAA_cuttrim_sorted.bam	DCGV
+BJE3514_DeDorn_TAATA_cuttrim_sorted.bam	DCGV
+BJE3515_DeDorn_TACAT_cuttrim_sorted.bam	DCGV
+BJE3525_Laigns_GAATTCA_cuttrim_sorted.bam	Laigns
+BJE3526_Laigns_GAACTTG_cuttrim_sorted.bam	Laigns
+BJE3527_Laigns_GGACCTA_cuttrim_sorted.bam	Laigns
+BJE3528_Laigns_GTCGATT_cuttrim_sorted.bam	Laigns
+BJE3529_Laigns_AACGCCT_cuttrim_sorted.bam	Laigns
+BJE3530_Laigns_AATATGG_cuttrim_sorted.bam	Laigns
+BJE3531_Laigns_ACGTGTT_cuttrim_sorted.bam	Laigns
+BJE3532_Laigns_ATTAATT_cuttrim_sorted.bam	Laigns
+BJE3533_Laigns_ATTGGAT_cuttrim_sorted.bam	Laigns
+BJE3534_BW_CTCG_cuttrim_sorted.bam	BW
+BJE3535_BW_TGCA_cuttrim_sorted.bam	BW
+BJE3536_BW_ACTA_cuttrim_sorted.bam	BW
+BJE3537_BW_CAGA_cuttrim_sorted.bam	BW
+BJE3538_BW_AACT_cuttrim_sorted.bam	BW
+BJE3539_BW_GCGT_cuttrim_sorted.bam	BW
+BJE3541_BW_CGAT_cuttrim_sorted.bam	BW
+BJE3542_BW_GTAA_cuttrim_sorted.bam	BW
+BJE3543_BW_AGCG_cuttrim_sorted.bam	BW
+BJE3544_BW_GATG_cuttrim_sorted.bam	BW
+BJE3545_BW_TCAG_cuttrim_sorted.bam	BW
+BJE3546_BW_TGCGA_cuttrim_sorted.bam	BW
+BJE3547_GRNP_TAGGAA_cuttrim_sorted.bam	DCGV
+BJE3548_GRNP_GCTCTA_cuttrim_sorted.bam	DCGV
+BJE3549_GRNP_CCACAA_cuttrim_sorted.bam	DCGV
+BJE3550_GRNP_CTTCCA_cuttrim_sorted.bam	DCGV
+BJE3551_GRNP_GAGATA_cuttrim_sorted.bam	DCGV
+BJE3552_GRNP_ATGCCT_cuttrim_sorted.bam	DCGV
+BJE3553_GRNP_AGTGGA_cuttrim_sorted.bam	DCGV
+BJE3554_GRNP_ACCTAA_cuttrim_sorted.bam	DCGV
+BJE3573_VicW_CGCGGAGA_cuttrim_sorted.bam	VicW
+BJE3574_VicW_CGTGTGGT_cuttrim_sorted.bam	VicW
+BJE3575_Kimber_GTACTT_cuttrim_sorted.bam	KD
+BJE3576_Kimber_GTTGAA_cuttrim_sorted.bam	KD
+BJE3577_Kimber_TAACGA_cuttrim_sorted.bam	KD
+BJE3578_Kimber_TGGCTA_cuttrim_sorted.bam	KD
+BJE3579_Kimber_TATTTTT_cuttrim_sorted.bam	KD
+BJE3580_Kimber_CTTGCTT_cuttrim_sorted.bam	KD
+BJE3581_Kimber_ATGAAAG_cuttrim_sorted.bam	KD
+BJE3582_Kimber_AAAAGTT_cuttrim_sorted.bam	KD
+BJE3633_Niewou_CGCTGAT_cuttrim_sorted.bam	Niewou
+BJE3640_Niewou_CGGTAGA_cuttrim_sorted.bam	Niewou
+BJE3641_Niewou_CTACGGA_cuttrim_sorted.bam	Niewou
+BJE3642_Niewou_GCGGAAT_cuttrim_sorted.bam	Niewou
+BJE3644_Niewou_TAGCGGA_cuttrim_sorted.bam	Niewou
+BJE3645_Niewou_TCGAAGA_cuttrim_sorted.bam	Niewou
+BJE3647_Niewou_TCTGTGA_cuttrim_sorted.bam	Niewou
+BJE3654_ThreeSis_TGCTGGA_cuttrim_sorted.bam	Threesis
+BJE3655_ThreeSis_ACGACTAG_cuttrim_sorted.bam	Threesis
+BJE3656_ThreeSis_TAGCATGG_cuttrim_sorted.bam	Threesis
+BJE3657_ThreeSis_TAGGCCAT_cuttrim_sorted.bam	Threesis
+BJE3658_ThreeSis_TGCAAGGA_cuttrim_sorted.bam	Threesis
+BJE3659_ThreeSis_TGGTACGT_cuttrim_sorted.bam	Threesis
+BJE3660_ThreeSis_TCTCAGTG_cuttrim_sorted.bam	Threesis
+BJE3661_ThreeSis_CGCGATAT_cuttrim_sorted.bam	Threesis
+BJE3662_ThreeSis_CGCCTTAT_cuttrim_sorted.bam	Threesis
+BJE3663_ThreeSis_AACCGAGA_cuttrim_sorted.bam	Threesis
+BJE3664_ThreeSis_ACAGGGA_cuttrim_sorted.bam	Threesis
+BJE3665_ThreeSis_ACGTGGTA_cuttrim_sorted.bam	Threesis
+BJE3666_ThreeSis_CCATGGGT_cuttrim_sorted.bam	Threesis
+BJE3667_Citrus_CGCTT_cuttrim_sorted.bam	DCGV
+BJE3668_Citrus_TCACG_cuttrim_sorted.bam	DCGV
+BJE3669_Citrus_CTAGG_cuttrim_sorted.bam	DCGV
+BJE3670_Citrus_ACAAA_cuttrim_sorted.bam	DCGV
+BJE3671_Citrus_TTCTG_cuttrim_sorted.bam	DCGV
+BJE3672_Citrus_AGCCG_cuttrim_sorted.bam	DCGV
+BJE3673_Citrus_GTATT_cuttrim_sorted.bam	DCGV
+BJE3674_Citrus_CTGTA_cuttrim_sorted.bam	DCGV
+BJE3675_Citrus_ACCGT_cuttrim_sorted.bam	DCGV
+BJE3676_Citrus_GCTTA_cuttrim_sorted.bam	DCGV
+BJE3677_Citrus_GGTGT_cuttrim_sorted.bam	DCGV
+BJE3678_Citrus_AGGAT_cuttrim_sorted.bam	DCGV
+JM_no_label1_Draken_CCACGT_cuttrim_sorted.bam	KD
+JM_no_label2_Draken_TTCAGA_cuttrim_sorted.bam	KD
+RT5_Botsw_GGATTGGT_cuttrim_sorted.bam	Other
+Vred_8_Vred_GCTGTGGA_cuttrim_sorted.bam	DCGV
+amnh17260_Nigeria_GTGAGGGT_cuttrim_sorted.bam	Other
+```
+Then save this script in scripts folder as ABBABABA.sh
+```bash
+#!/bin/sh
+#SBATCH --job-name=abba
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=8:00:00
+#SBATCH --mem=8gb
+#SBATCH --output=abba.%J.out
+#SBATCH --error=abba.%J.err
+#SBATCH --account=def-ben
+
+#SBATCH --mail-user=premacht@mcmaster.ca
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=REQUEUE
+#SBATCH --mail-type=ALL
+
+# sbatch ABBABABA.sh chr H1 H2 H3 O
+# sbatch ABBABABA.sh chr01 nig nge hec papio
+
+# populations
+# bru papio hec mau nem sum nig nge tog ton
+
+
+module load StdEnv/2020
+module load scipy-stack/2020b
+module load python/3.8.2
+
+echo python3 ../genomics_general/ABBABABAwindows.py -g ./processed_final_geno.gz -f phased -o ./${1}_${2}_${3}_${4}_${5}.csv -w 100000 -m 100 -s 100000 -P1 ${2} -P2 ${3} -P3 ${4} -O ${5} -T 10 --minData 0.5 --popsFile ../scripts/pop_list_1.txt --writeFailedWindows --windType coordinate
+
+python3 ../genomics_general/ABBABABAwindows.py -g ./processed_final_geno.gz -f phased -o ./${1}_${2}_${3}_${4}_${5}.csv -w 100000 -m 100 -s 100000 -P1 ${2} -P2 ${3} -P3 ${4} -O ${5} -T 10 --minData 0.5 --popsFile ../scripts/pop_list_1.txt --writeFailedWindows --windType coordinate
+```
+you can run it for different population orders as shown in the script.
+I use following in the ABBA_BABA_test folder to run them all together for all genomes
+the format is - sbatch ABBABABA.sh chr H1 H2 H3 O (chr is whatever the name you want. Others are different populations and outgroup as for ABBA BABA
+```bash
+for i in all l_only s_only; do
+cd ${i}
+cp ../scripts/ABBABABA.sh .
+sbatch ABBABABA.sh autosomes BW Laigns DCGV KD
+cd .. ; done
+```
 

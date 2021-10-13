@@ -1299,7 +1299,7 @@ Then save this script in scripts folder as ABBABABA.sh
 #SBATCH --job-name=abba
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --time=8:00:00
+#SBATCH --time=12:00:00
 #SBATCH --mem=8gb
 #SBATCH --output=abba.%J.out
 #SBATCH --error=abba.%J.err

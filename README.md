@@ -1555,4 +1555,10 @@ perl ../scripts/jackknife.pl autosomes_KD_Threesis_BW_DCGV.csv > autosomes_KD_Th
 
 cd .. ; done
 ```
+collect csvs to download
+```bash
+mkdir ../csvs_to_download
+find . -name '*.csv' -exec cp --parents \{\} ../csvs_to_download/ \;
+cd ..
+```
 

@@ -1370,7 +1370,8 @@ cd .. ; done
 copy Makes_inputfile_for_jackknife.pl into scripts folder to prepare file for jackknife
 
 Makes_inputfile_for_jackknife.pl
-```
+
+```perl
 #!/usr/bin/env perl
 use strict;
 use warnings;
@@ -1426,6 +1427,7 @@ foreach my $infile (1..$#files){
 }	
 
 close OUTFILE
+
 
 ```
 

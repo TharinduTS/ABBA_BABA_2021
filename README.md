@@ -1644,7 +1644,7 @@ cd ..
 collect tsvs to download
 ```bash
 mkdir ../tsvs_to_download
-find . -name '*.tsv' -exec cp --parents \{\} ../csvs_to_download/ \;
+find . -name '*.tsv' -exec cp --parents \{\} ../tsvs_to_download/ \;
 cd ..
 ```
 

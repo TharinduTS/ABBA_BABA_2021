@@ -1367,6 +1367,85 @@ cd ${i}
 sbatch ABBABABA.sh autosomes KD Threesis BW DCGV
 cd .. ; done
 
+copy Makes_inputfile_for_jackknife.pl into scripts folder to prepare file for jackknife
+
+Makes_inputfile_for_jackknife.pl
+```
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+
+# This program globs a bunch of chromosome output files from the script called Performs_ABBA_BABA_on_populations.pl
+# and concatenates them for analysis by "Does_block_jackknife.pl"
+
+# Run like this "Makes_inputfile_for_jackknife.pl inputprefix"
+
+# The output prefix will be: inputprefix.concat
+
+my $inputfile = $ARGV[0];
+
+
+my @files = glob("'*${inputfile}*'");
+
+print "hi @files\n";
+
+# open an outputfile
+unless (open(OUTFILE, ">$inputfile.concat"))  {
+	print "I can\'t write to $inputfile.concat\n";
+	exit;
+}
+print "Creating output file: $inputfile.concat\n";
+
+
+unless (open DATAINPUT, $files[0]) {
+	print "Can not find the input file.\n";
+	exit;
+}
+
+while ( my $line = <DATAINPUT>) {
+	print OUTFILE $line;
+}		
+close DATAINPUT;
+
+my $counter=0;
+
+foreach my $infile (1..$#files){
+	unless (open DATAINPUT, $files[$infile]) {
+		print "Can not find the input file.\n";
+		exit;
+	}
+	$counter=0;
+	while ( my $line = <DATAINPUT>) {
+		if($counter>0){
+			print OUTFILE $line;
+		}
+		$counter+=1;
+	}		
+	close DATAINPUT;
+}	
+
+close OUTFILE
+
+```
+
+run this for all
+
+```bash
+
+for i in all l_only s_only; do
+cd ${i}
+
+
+perl ../scripts/Makes_inputfile_for_jackknife.pl autosomes_BW_Laigns_DCGV_KD
+
+perl ../scripts/Makes_inputfile_for_jackknife.pl autosomes_KD_Threesis_BW_DCGV 
+
+
+cd .. ; done
+  
+```
+
 copy jackknife into scripts folder
 
 jackknife.pl
@@ -1548,9 +1627,9 @@ for i in all l_only s_only; do
 cd ${i}
 
 
-perl ../scripts/jackknife.pl autosomes_BW_Laigns_DCGV_KD.csv > autosomes_BW_Laigns_DCGV_KD_summary.tsv
+perl ../scripts/jackknife.pl autosomes_BW_Laigns_DCGV_KD.concat > autosomes_BW_Laigns_DCGV_KD_summary.tsv
 
-perl ../scripts/jackknife.pl autosomes_KD_Threesis_BW_DCGV.csv > autosomes_KD_Threesis_BW_DCGV_summary.tsv
+perl ../scripts/jackknife.pl autosomes_KD_Threesis_BW_DCGV.concat > autosomes_KD_Threesis_BW_DCGV_summary.tsv
 
 
 cd .. ; done

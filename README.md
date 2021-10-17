@@ -1207,7 +1207,6 @@ sed -r '/\t[a-zA-Z]{2,}\/[a-zA-Z]{1,}/d' processing_step_one.geno > processing_s
 
 
 sed -r '/\t[a-zA-Z]{1,}\/[a-zA-Z]{2,}/d' processing_step_two.geno > processing_step_three.geno
-![image](https://user-images.githubusercontent.com/57451846/137605028-b0e061a6-8c76-4148-babd-9d741fbaafc9.png)
 ```
 
 now we are ready to do the ABBA_BABA test

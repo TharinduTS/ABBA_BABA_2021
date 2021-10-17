@@ -1191,6 +1191,25 @@ gzip -c autosomes_phased.geno >processed_final_geno.gz
 cd .. ; done
 ```
 
+I had to add several more cleaning steps to clean the geno file
+
+unzip geno file
+replace ‘|” with /
+remove places with ploidy>2
+running this twice to cover each side with ploidy>2
+
+```bash
+gunzip processed_final_geno.gz
+
+sed -r 's/\|/\//g' processed_final_geno> processing_step_one.geno
+
+sed -r '/\t[a-zA-Z]{2,}\/[a-zA-Z]{1,}/d' processing_step_one.geno > processing_step_two.geno
+
+
+sed -r '/\t[a-zA-Z]{1,}\/[a-zA-Z]{2,}/d' processing_step_two.geno > processing_step_three.geno
+![image](https://user-images.githubusercontent.com/57451846/137605028-b0e061a6-8c76-4148-babd-9d741fbaafc9.png)
+```
+
 now we are ready to do the ABBA_BABA test
 
 first create a file with populations like this and put it in scripts folder

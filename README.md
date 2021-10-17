@@ -1448,16 +1448,15 @@ cd .. ; done
 
 copy jackknife into scripts folder
 
+This program reads in the output of the script called Performs_ABBA_BABA_on_populations.pl
+and calculates the standard error of the weighted mean value of fDM with weightings based 
+on the sum of the number of abba and baba sites in each window.	
+	
 jackknife.pl
 ```perl
 #!/usr/bin/env perl
 use strict;
 use warnings;
-
-
-# This program reads in the output of the script called Performs_ABBA_BABA_on_populations.pl
-# and calculates the standard error of the weighted mean value of fDM with weightings based 
-# on the sum of the number of abba and baba sites in each window.
 
 my $inputfile = $ARGV[0];
 
@@ -1638,6 +1637,12 @@ collect csvs to download
 ```bash
 mkdir ../csvs_to_download
 find . -name '*.csv' -exec cp --parents \{\} ../csvs_to_download/ \;
+cd ..
+```
+collect tsvs to download
+```bash
+mkdir ../tsvs_to_download
+find . -name '*.tsv' -exec cp --parents \{\} ../csvs_to_download/ \;
 cd ..
 ```
 

@@ -1191,7 +1191,7 @@ gzip -c autosomes_phased.geno >processed_final_geno.gz
 cd .. ; done
 ```
 
-I had to add several more cleaning steps to clean the geno file
+I had to add several more cleaning steps to clean the geno file - again running this in the ABBA_BABA_test folder
 
 unzip geno file
 replace ‘|” with /
@@ -1199,6 +1199,9 @@ remove places with ploidy>2
 running this twice to cover each side with ploidy>2
 
 ```bash
+for i in all l_only s_only; do
+cd ${i}
+
 gunzip processed_final_geno.gz
 
 sed -r 's/\|/\//g' processed_final_geno> processing_step_one.geno
@@ -1207,6 +1210,8 @@ sed -r '/\t[a-zA-Z]{2,}\/[a-zA-Z]{1,}/d' processing_step_one.geno > processing_s
 
 
 sed -r '/\t[a-zA-Z]{1,}\/[a-zA-Z]{2,}/d' processing_step_two.geno > processing_step_three.geno
+
+cd .. ; done
 ```
 
 now we are ready to do the ABBA_BABA test
@@ -1317,7 +1322,7 @@ Then save this script in scripts folder as ABBABABA.sh
 #SBATCH --job-name=abba
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --time=12:00:00
+#SBATCH --time=4:00:00
 #SBATCH --mem=8gb
 #SBATCH --output=abba.%J.out
 #SBATCH --error=abba.%J.err
@@ -1341,9 +1346,9 @@ module load StdEnv/2020
 module load scipy-stack/2020b
 module load python/3.8.2
 
-echo python3 ../genomics_general/ABBABABAwindows.py -g ./processed_final_geno.gz -f phased -o ./${1}_${2}_${3}_${4}_${5}.csv -w 100000 -m 100 -s 100000 -P1 ${2} -P2 ${3} -P3 ${4} -O ${5} -T 10 --minData 0.5 --popsFile ../scripts/pop_list_1.txt --writeFailedWindows --windType coordinate
+echo python3 ../genomics_general/ABBABABAwindows.py -g ./processing_step_three.geno -f phased -o ./${1}_${2}_${3}_${4}_${5}.csv -w 100000 -m 100 -s 100000 -P1 ${2} -P2 ${3} -P3 ${4} -O ${5} -T 10 --minData 0.5 --popsFile ../scripts/pop_list_1.txt --writeFailedWindows --windType coordinate
 
-python3 ../genomics_general/ABBABABAwindows.py -g ./processed_final_geno.gz -f phased -o ./${1}_${2}_${3}_${4}_${5}.csv -w 100000 -m 100 -s 100000 -P1 ${2} -P2 ${3} -P3 ${4} -O ${5} -T 10 --minData 0.5 --popsFile ../scripts/pop_list_1.txt --writeFailedWindows --windType coordinate
+python3 ../genomics_general/ABBABABAwindows.py -g ./processing_step_three.geno -f phased -o ./${1}_${2}_${3}_${4}_${5}.csv -w 100000 -m 100 -s 100000 -P1 ${2} -P2 ${3} -P3 ${4} -O ${5} -T 10 --minData 0.5 --popsFile ../scripts/pop_list_1.txt --writeFailedWindows --windType coordinate
 ```
 you can run it for different population orders as shown in the script.
 I use following in the ABBA_BABA_test folder to run them all together for all genomes

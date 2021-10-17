@@ -1360,4 +1360,11 @@ cp ../scripts/ABBABABA.sh .
 sbatch ABBABABA.sh autosomes BW Laigns DCGV KD
 cd .. ; done
 ```
+running it again for different populations
+```bash
+for i in all l_only s_only; do
+cd ${i}
+sbatch ABBABABA.sh autosomes KD Threesis BW DCGV
+cd .. ; done
+
 

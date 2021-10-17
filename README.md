@@ -1366,7 +1366,7 @@ for i in all l_only s_only; do
 cd ${i}
 sbatch ABBABABA.sh autosomes KD Threesis BW DCGV
 cd .. ; done
-
+```
 copy Makes_inputfile_for_jackknife.pl into scripts folder to prepare file for jackknife
 
 Makes_inputfile_for_jackknife.pl

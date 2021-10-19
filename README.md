@@ -1891,7 +1891,7 @@ Beagle.sh
 
 module load java
 
-java -Xmx12g -jar ./beagle.28Jun21.220.jar gt= ${1} out= ${1}_phased.vcf.gz impute=true
+java -Xmx12g -jar ./beagle.28Jun21.220.jar gt=${1} out=${1}_phased.vcf.gz impute=true
 
 ```
 

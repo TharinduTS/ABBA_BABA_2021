@@ -1845,3 +1845,79 @@ copy filtered again files there
 cp -r ../ADMIXTURE/filtered_again_VCFs/ .
 ```
 
+compress and index(inside combined_files) convert to geno format using plink , make a bed file and remove any SNP with no data for autosomes do all these for l_only and s_only seperately and we need to change the chr names in the .bim file because these cause problems for admixture: create a directory to collect outputs from next step
+
+```bash
+
+for i in *.vcf; do
+module load StdEnv/2020  intel/2020.1.217 bcftools/1.11
+bgzip -c ${i}> ${i}.gz
+tabix -p vcf ${i}.gz
+module load nixpkgs/16.09  intel/2016.4 plink/1.9b_5.2-x86_64
+plink --vcf ./${i}.gz --make-bed --geno 0.999 --out ./${i} --allow-extra-chr --const-fid
+awk -v OFS='\t' '{$1=0;print $0}' ${i}.bim > ${i}.bim.tmp
+mv ${i}.bim.tmp ${i}.bim; done
+
+```
+Collect needed files for next step
+```bash
+mkdir processed_vcfs
+cp filtered_again_VCFs/*vcf.gz processed_vcfs/
+```
+
+Save this in scripts
+
+Beagle.sh
+
+```bash
+#!/bin/sh
+#SBATCH --job-name=beagle
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=1:00:00
+#SBATCH --mem=64gb
+#SBATCH --output=bwa.%J.out
+#SBATCH --error=bwa.%J.err
+#SBATCH --account=def-ben
+
+#SBATCH --mail-user=premacht@mcmaster.ca
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=REQUEUE
+#SBATCH --mail-type=ALL
+
+# sbatch Beagle.sh autosomes
+
+module load java
+
+java -Xmx12g -jar ./beagle.28Jun21.220.jar gt= ${1} out= ${1}_phased.vcf.gz impute=true
+
+```
+
+I filtered for the DP and the genotypes that did not pass the filter were set to ./. javascripts I have to use next cannot handle this. Therefore I have to edit those characters first. 
+edit the characters copy needed scripts and then submit jobs to phase VCF files for all three genomes
+inside processed_vcfs
+```bash
+module load java
+cp ../scripts/beagle.28Jun21.220.jar .
+cp ../scripts/Beagle.sh .
+for i in *.vcf.gz; do
+zcat ${i} | perl -pe "s/\s\.:/\t.\/.:/g"> ${i}out.vcf
+sbatch Beagle.sh ${i}out.vcf
+```
+
+clone genomics general scripts
+
+```bash
+git clone https://github.com/simonhmartin/genomics_general
+```
+
+and download beagle in scripts folder
+
+```bash
+cd scripts
+wget https://faculty.washington.edu/browning/beagle/beagle.28Jun21.220.jar .
+cd ..
+```
+

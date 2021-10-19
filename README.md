@@ -1894,9 +1894,23 @@ module load java
 java -Xmx12g -jar ./beagle.28Jun21.220.jar gt=${1} out=${1}_phased.vcf.gz impute=true
 
 ```
+and download beagle in scripts folder
+
+```bash
+cd scripts
+wget https://faculty.washington.edu/browning/beagle/beagle.28Jun21.220.jar .
+```
+clone genomics general scripts
+
+```bash
+git clone https://github.com/simonhmartin/genomics_general
+cd ..
+```
 
 I filtered for the DP and the genotypes that did not pass the filter were set to ./. javascripts I have to use next cannot handle this. Therefore I have to edit those characters first. 
 edit the characters copy needed scripts and then submit jobs to phase VCF files for all three genomes
+
+
 inside processed_vcfs
 ```bash
 module load java
@@ -1907,17 +1921,9 @@ zcat ${i} | perl -pe "s/\s\.:/\t.\/.:/g"> ${i}out.vcf
 sbatch Beagle.sh ${i}out.vcf; done
 ```
 
-clone genomics general scripts
 
-```bash
-git clone https://github.com/simonhmartin/genomics_general
-```
 
-and download beagle in scripts folder
 
-```bash
-cd scripts
-wget https://faculty.washington.edu/browning/beagle/beagle.28Jun21.220.jar .
-cd ..
-```
+
+
 

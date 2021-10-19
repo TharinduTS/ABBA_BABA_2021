@@ -1904,7 +1904,7 @@ cp ../scripts/beagle.28Jun21.220.jar .
 cp ../scripts/Beagle.sh .
 for i in *.vcf.gz; do
 zcat ${i} | perl -pe "s/\s\.:/\t.\/.:/g"> ${i}out.vcf
-sbatch Beagle.sh ${i}out.vcf
+sbatch Beagle.sh ${i}out.vcf; done
 ```
 
 clone genomics general scripts

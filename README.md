@@ -1835,4 +1835,13 @@ cd ..
 
 Finally, as there was a little difference between the number of ABBA/BABA sites (S+L was not equal to all) I tried doing the same test without concatanating chromosomes till the last step
 
+created a new directory
+
+```bash
+mkdir ABBA_BABA_NO_CONCAT
+```
+copy filtered again files there
+```bash
+cp -r ../ADMIXTURE/filtered_again_VCFs/ .
+```
 

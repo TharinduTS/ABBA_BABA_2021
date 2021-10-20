@@ -1833,6 +1833,10 @@ find . -name 'jack_fdm*.tsv' -exec cp --parents \{\} ../jack_fdm_to_download/ \;
 cd ..
 ```
 
+this calculation ends here
+# ******************* The End ******************************
+
+
 Finally, as there was a little difference between the number of ABBA/BABA sites (S+L was not equal to all) I tried doing the same test without concatanating chromosomes till the last step
 
 created a new directory
@@ -1920,10 +1924,672 @@ for i in *.vcf.gz; do
 zcat ${i} | perl -pe "s/\s\.:/\t.\/.:/g"> ${i}out.vcf
 sbatch Beagle.sh ${i}out.vcf; done
 ```
+Load python
+
+```bash
+module load python/3.8.2
+virtualenv --no-download ~/ENV
+source ~/ENV/bin/activate
+pip install --no-index --upgrade pip
+pip install numpy --no-index
+```
+
+now create geno files with the phased vcf files for all 
+
+in processed_vcfs
+```bash
+for i in *vcf_phased.vcf.gz.vcf.gz; do ./../genomics_general/VCF_processing/parseVCF.py -i ${i} -o ${i}_phased.geno; done
+```
+
+use following once you are done and want to exit the environment
+
+```bash
+deactivate
+```
+
+Then it is necessary to swap any astrisks with Ns:(so again running this in the folder ABBA_BABA_test with all/ l_only s_only)
+
+```bash
+
+for i in *phased.geno; do
+sed -i 's/\*/N/g' ${i}
+gzip -c ${i} >${i}_before_final_geno.gz;done
+
+```
+I had to add several more cleaning steps to clean the geno file - again running this in the ABBA_BABA_test folder
+
+unzip geno file replace ‘|” with / remove places with ploidy>2 running this twice to cover each side with ploidy>2
+
+```bash
+
+for i in *_before_final_geno.gz; do
+gunzip ${i};done
+
+for i in *_before_final_geno; do
+sed -r 's/\|/\//g' ${i}> ${i}processing_step_one.geno
+sed -r '/\t[a-zA-Z]{2,}\/[a-zA-Z]{1,}/d' ${i}processing_step_one.geno > ${i}processing_step_two.geno
+sed -r '/\t[a-zA-Z]{1,}\/[a-zA-Z]{2,}/d' ${i}processing_step_two.geno > ${i}processing_step_three.geno; done
+
+```
+move finalized geno files to a new  and directory changing long file names
+
+```
+mkdir ../finalized_geno_files
+mv *processing_step_three.geno ../finalized_geno_files
+cd ../finalized_geno_files
+
+find . -type f -name '*processing_step_three.geno' | while read FILE ; do     newfile="$(echo ${FILE} |sed -e 's/positions_excluded_missing_filtered.vcf.recode.vcf.gzout.vcf_phased.vcf.gz.vcf.gz_phased.geno_before_final_genoprocessing_step_three.geno/finalized.geno/g')" ; mv "${FILE}" "${newfile}" ; done
+
+```
+now we are ready to do the ABBA_BABA test
+
+first create a file with populations like this and put it in scripts folder
+
+pop_list_1.txt
+```txt
+2014_Inhaca_10_Inhaca_ATATGT_cuttrim_sorted.bam	Inhaca
+2014_Inhaca_150_Inhaca_ATCGTA_cuttrim_sorted.bam	Inhaca
+2014_Inhaca_152_Inhaca_CATCGT_cuttrim_sorted.bam	Inhaca
+2014_Inhaca_24_Inhaca_CGCGGT_cuttrim_sorted.bam	Inhaca
+2014_Inhaca_38_Inhaca_CTATTA_cuttrim_sorted.bam	Inhaca
+2014_Inhaca_52_Inhaca_GCCAGT_cuttrim_sorted.bam	Inhaca
+2014_Inhaca_65_Inhaca_GGAAGA_cuttrim_sorted.bam	Inhaca
+946_Draken_TCGTT_cuttrim_sorted.bam	KD
+993_Draken_GGTTGT_cuttrim_sorted.bam	KD
+BJE2897_Lendu_TTCCTGGA_cuttrim_sorted.bam	Other
+BJE3252_Cameroon_TATCGGGA_cuttrim_sorted.bam	Other
+BJE3508_DeDorn_ATTGA_cuttrim_sorted.bam	DCGV
+BJE3509_DeDorn_CATCT_cuttrim_sorted.bam	DCGV
+BJE3510_DeDorn_CCTAG_cuttrim_sorted.bam	DCGV
+BJE3511_DeDorn_GAGGA_cuttrim_sorted.bam	DCGV
+BJE3512_DeDorn_GGAAG_cuttrim_sorted.bam	DCGV
+BJE3513_DeDorn_GTCAA_cuttrim_sorted.bam	DCGV
+BJE3514_DeDorn_TAATA_cuttrim_sorted.bam	DCGV
+BJE3515_DeDorn_TACAT_cuttrim_sorted.bam	DCGV
+BJE3525_Laigns_GAATTCA_cuttrim_sorted.bam	Laigns
+BJE3526_Laigns_GAACTTG_cuttrim_sorted.bam	Laigns
+BJE3527_Laigns_GGACCTA_cuttrim_sorted.bam	Laigns
+BJE3528_Laigns_GTCGATT_cuttrim_sorted.bam	Laigns
+BJE3529_Laigns_AACGCCT_cuttrim_sorted.bam	Laigns
+BJE3530_Laigns_AATATGG_cuttrim_sorted.bam	Laigns
+BJE3531_Laigns_ACGTGTT_cuttrim_sorted.bam	Laigns
+BJE3532_Laigns_ATTAATT_cuttrim_sorted.bam	Laigns
+BJE3533_Laigns_ATTGGAT_cuttrim_sorted.bam	Laigns
+BJE3534_BW_CTCG_cuttrim_sorted.bam	BW
+BJE3535_BW_TGCA_cuttrim_sorted.bam	BW
+BJE3536_BW_ACTA_cuttrim_sorted.bam	BW
+BJE3537_BW_CAGA_cuttrim_sorted.bam	BW
+BJE3538_BW_AACT_cuttrim_sorted.bam	BW
+BJE3539_BW_GCGT_cuttrim_sorted.bam	BW
+BJE3541_BW_CGAT_cuttrim_sorted.bam	BW
+BJE3542_BW_GTAA_cuttrim_sorted.bam	BW
+BJE3543_BW_AGCG_cuttrim_sorted.bam	BW
+BJE3544_BW_GATG_cuttrim_sorted.bam	BW
+BJE3545_BW_TCAG_cuttrim_sorted.bam	BW
+BJE3546_BW_TGCGA_cuttrim_sorted.bam	BW
+BJE3547_GRNP_TAGGAA_cuttrim_sorted.bam	DCGV
+BJE3548_GRNP_GCTCTA_cuttrim_sorted.bam	DCGV
+BJE3549_GRNP_CCACAA_cuttrim_sorted.bam	DCGV
+BJE3550_GRNP_CTTCCA_cuttrim_sorted.bam	DCGV
+BJE3551_GRNP_GAGATA_cuttrim_sorted.bam	DCGV
+BJE3552_GRNP_ATGCCT_cuttrim_sorted.bam	DCGV
+BJE3553_GRNP_AGTGGA_cuttrim_sorted.bam	DCGV
+BJE3554_GRNP_ACCTAA_cuttrim_sorted.bam	DCGV
+BJE3573_VicW_CGCGGAGA_cuttrim_sorted.bam	VicW
+BJE3574_VicW_CGTGTGGT_cuttrim_sorted.bam	VicW
+BJE3575_Kimber_GTACTT_cuttrim_sorted.bam	KD
+BJE3576_Kimber_GTTGAA_cuttrim_sorted.bam	KD
+BJE3577_Kimber_TAACGA_cuttrim_sorted.bam	KD
+BJE3578_Kimber_TGGCTA_cuttrim_sorted.bam	KD
+BJE3579_Kimber_TATTTTT_cuttrim_sorted.bam	KD
+BJE3580_Kimber_CTTGCTT_cuttrim_sorted.bam	KD
+BJE3581_Kimber_ATGAAAG_cuttrim_sorted.bam	KD
+BJE3582_Kimber_AAAAGTT_cuttrim_sorted.bam	KD
+BJE3633_Niewou_CGCTGAT_cuttrim_sorted.bam	Niewou
+BJE3640_Niewou_CGGTAGA_cuttrim_sorted.bam	Niewou
+BJE3641_Niewou_CTACGGA_cuttrim_sorted.bam	Niewou
+BJE3642_Niewou_GCGGAAT_cuttrim_sorted.bam	Niewou
+BJE3644_Niewou_TAGCGGA_cuttrim_sorted.bam	Niewou
+BJE3645_Niewou_TCGAAGA_cuttrim_sorted.bam	Niewou
+BJE3647_Niewou_TCTGTGA_cuttrim_sorted.bam	Niewou
+BJE3654_ThreeSis_TGCTGGA_cuttrim_sorted.bam	Threesis
+BJE3655_ThreeSis_ACGACTAG_cuttrim_sorted.bam	Threesis
+BJE3656_ThreeSis_TAGCATGG_cuttrim_sorted.bam	Threesis
+BJE3657_ThreeSis_TAGGCCAT_cuttrim_sorted.bam	Threesis
+BJE3658_ThreeSis_TGCAAGGA_cuttrim_sorted.bam	Threesis
+BJE3659_ThreeSis_TGGTACGT_cuttrim_sorted.bam	Threesis
+BJE3660_ThreeSis_TCTCAGTG_cuttrim_sorted.bam	Threesis
+BJE3661_ThreeSis_CGCGATAT_cuttrim_sorted.bam	Threesis
+BJE3662_ThreeSis_CGCCTTAT_cuttrim_sorted.bam	Threesis
+BJE3663_ThreeSis_AACCGAGA_cuttrim_sorted.bam	Threesis
+BJE3664_ThreeSis_ACAGGGA_cuttrim_sorted.bam	Threesis
+BJE3665_ThreeSis_ACGTGGTA_cuttrim_sorted.bam	Threesis
+BJE3666_ThreeSis_CCATGGGT_cuttrim_sorted.bam	Threesis
+BJE3667_Citrus_CGCTT_cuttrim_sorted.bam	DCGV
+BJE3668_Citrus_TCACG_cuttrim_sorted.bam	DCGV
+BJE3669_Citrus_CTAGG_cuttrim_sorted.bam	DCGV
+BJE3670_Citrus_ACAAA_cuttrim_sorted.bam	DCGV
+BJE3671_Citrus_TTCTG_cuttrim_sorted.bam	DCGV
+BJE3672_Citrus_AGCCG_cuttrim_sorted.bam	DCGV
+BJE3673_Citrus_GTATT_cuttrim_sorted.bam	DCGV
+BJE3674_Citrus_CTGTA_cuttrim_sorted.bam	DCGV
+BJE3675_Citrus_ACCGT_cuttrim_sorted.bam	DCGV
+BJE3676_Citrus_GCTTA_cuttrim_sorted.bam	DCGV
+BJE3677_Citrus_GGTGT_cuttrim_sorted.bam	DCGV
+BJE3678_Citrus_AGGAT_cuttrim_sorted.bam	DCGV
+JM_no_label1_Draken_CCACGT_cuttrim_sorted.bam	KD
+JM_no_label2_Draken_TTCAGA_cuttrim_sorted.bam	KD
+RT5_Botsw_GGATTGGT_cuttrim_sorted.bam	Other
+Vred_8_Vred_GCTGTGGA_cuttrim_sorted.bam	DCGV
+amnh17260_Nigeria_GTGAGGGT_cuttrim_sorted.bam	Other
+```
+Then save this script in scripts folder as ABBABABA.sh
+
+```bash
+#!/bin/sh
+#SBATCH --job-name=abba
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=4:00:00
+#SBATCH --mem=8gb
+#SBATCH --output=abba.%J.out
+#SBATCH --error=abba.%J.err
+#SBATCH --account=def-ben
+
+# sbatch ABBABABA.sh chr H1 H2 H3 O
+# sbatch ABBABABA.sh chr01 nig nge hec papio
+
+# populations
+# bru papio hec mau nem sum nig nge tog ton
 
 
+module load StdEnv/2020
+module load scipy-stack/2020b
+module load python/3.8.2
+
+echo python3 ../genomics_general/ABBABABAwindows.py -g ./${1} -f phased -o ./${1}_${2}_${3}_${4}_${5}.csv -w 100000 -m 100 -s 100000 -P1 ${2} -P2 ${3} -P3 ${4} -O ${5} -T 10 --minData 0.5 --popsFile ../scripts/pop_list_1.txt --writeFailedWindows --windType coordinate
+
+python3 ../genomics_general/ABBABABAwindows.py -g ./${1} -f phased -o ./${1}_${2}_${3}_${4}_${5}.csv -w 100000 -m 100 -s 100000 -P1 ${2} -P2 ${3} -P3 ${4} -O ${5} -T 10 --minData 0.5 --popsFile ../scripts/pop_list_1.txt --writeFailedWindows --windType coordinate
+
+```
+run this for all in finalized_geno_files/
+
+```bash
+cp ../scripts/ABBABABA.sh .
+for i in *finalized.geno; do
+sbatch ABBABABA.sh ${i} BW Laigns DCGV KD; done
+
+```
+
+for the other population set
+```bash
+for i in *finalized.geno; do
+sbatch ABBABABA.sh ${i} KD Threesis BW DCGV; done
+
+```
+
+seperate them in two folders
+```bash
+mkdir ../BW_Laigns_DCGV_KD_csvs
+mkdir ../KD_Threesis_BW_DCGV_csvs
+
+mv *BW_Laigns_DCGV_KD* ../BW_Laigns_DCGV_KD_csvs
+mv *KD_Threesis_BW_DCGV* ../KD_Threesis_BW_DCGV_csvs
+
+``
+
+Put them in respective folders for subgenomes to make it easy to process- Run this inside each of the two newly created folders above
+
+```bash
+mkdir all
+mkdir l_only
+mkdir s_only
+
+mv *.csv all
+cp all/*L* l_only
+cp all/*S* s_only
+
+```
+
+copy Makes_inputfile_for_jackknife.pl into scripts folder to prepare file for jackknife
+
+Makes_inputfile_for_jackknife.pl
+```perl
+#!/usr/bin/env perl
+use strict;
+use warnings;
 
 
+# This program globs a bunch of chromosome output files from the script called Performs_ABBA_BABA_on_populations.pl
+# and concatenates them for analysis by "Does_block_jackknife.pl"
+
+# Run like this "Makes_inputfile_for_jackknife.pl inputprefix"
+
+# The output prefix will be: inputprefix.concat
+
+my $inputfile = $ARGV[0];
 
 
+my @files = glob("'*${inputfile}*'");
 
+print "hi @files\n";
+
+# open an outputfile
+unless (open(OUTFILE, ">$inputfile.concat"))  {
+	print "I can\'t write to $inputfile.concat\n";
+	exit;
+}
+print "Creating output file: $inputfile.concat\n";
+
+
+unless (open DATAINPUT, $files[0]) {
+	print "Can not find the input file.\n";
+	exit;
+}
+
+while ( my $line = <DATAINPUT>) {
+	print OUTFILE $line;
+}		
+close DATAINPUT;
+
+my $counter=0;
+
+foreach my $infile (1..$#files){
+	unless (open DATAINPUT, $files[$infile]) {
+		print "Can not find the input file.\n";
+		exit;
+	}
+	$counter=0;
+	while ( my $line = <DATAINPUT>) {
+		if($counter>0){
+			print OUTFILE $line;
+		}
+		$counter+=1;
+	}		
+	close DATAINPUT;
+}	
+
+close OUTFILE
+```
+
+run this in each of csv folders to concatanate files
+
+```bash
+for i in all l_only s_only; do
+cd ${i}
+perl ../../scripts/Makes_inputfile_for_jackknife.pl DB_chr
+cd .. ; done
+
+```
+
+copy jackknife into scripts folder
+
+This program reads in the output of the script called Performs_ABBA_BABA_on_populations.pl and calculates the standard error of the weighted mean value of fDM with weightings based on the sum of the number of abba and baba sites in each window.
+
+```
+jackknife.pl
+
+```perl
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+my $inputfile = $ARGV[0];
+
+unless (open DATAINPUT, $inputfile) {
+        print "Can not find the input file.\n";
+        exit;
+}
+
+my @sumsites;
+my $fDM_numsites;
+my @fDM_numsites;
+my @D_values;
+my @weighted_D_values;
+my @fdm_values;
+my @weighted_fdm_values;
+my $counter=0;
+my $y;
+my $x;
+my @temp; 
+my $weighted_fdm_values;
+my $ABBA=0;
+my $BABA=0;
+my $BBAA=0;
+
+while ( my $line = <DATAINPUT>) {
+        @temp=split(',',$line);
+        if($temp[0] ne 'scaffold'){
+                # if fDM is not numeric, it shouldn't contribute to the weighted average
+                if(($temp[6] !~ /nan/)&&($temp[7] !~ /nan/)&&($temp[8] !~ /nan/)&&($temp[10] !~ /nan/)){
+                        # load the number of ABBA and BABA sites for each window
+                        $sumsites[$counter]=$temp[6]+$temp[7];
+                        # load the number of fDM sites for each window
+                        $fDM_numsites[$counter]=$temp[6]+$temp[7];
+                        # add them up to eventually get the average
+                        $fDM_numsites+=$temp[6]+$temp[7];
+                        # also load the fDM stat for each window
+                        $D_values[$counter]=$temp[8];
+                        # keep track of how many windows are loaded
+                        $fdm_values[$counter]=$temp[10];
+                        # keep track of how many windows are loaded
+                        $counter+=1;
+                        $ABBA+=$temp[6];
+                        $BABA+=$temp[7];
+                }
+        }       
+}               
+
+# Calculate real stat
+# make $fDM_numsites the average per site
+$fDM_numsites=$fDM_numsites/($counter);
+my $weighted_D_average=0;
+my $weighted_fdm_average=0;
+# calculate the weighted average of fDM
+for ($y = 0 ; $y <= $#fdm_values; $y++ ) {
+        $weighted_D_average+=($fDM_numsites[$y]*$D_values[$y]/$fDM_numsites);
+        $weighted_fdm_average+=($fDM_numsites[$y]*$fdm_values[$y]/$fDM_numsites);
+}       
+print "The number of ABBA sites is ",$ABBA,"\n";
+print "The number of BABA sites is ",$BABA,"\n";
+print "The average number of ABBABABA sites per window is ",$fDM_numsites,"\n";
+#print "The non-weighted average is ",sprintf("%.6f",$non_weighted_fdm_value/($counter)),"\n";
+$weighted_D_average=$weighted_D_average/($counter);
+$weighted_fdm_average=$weighted_fdm_average/($counter);
+print "The weighted D average is ",sprintf("%.6f",$weighted_D_average),"\n";
+print "The weighted fDM average is ",sprintf("%.6f",$weighted_fdm_average),"\n";
+
+# now calculate the standard error.
+my @jack_sumsites;
+my $jack_averagesites;
+my @jack_fdm_values;
+my $jack_weighted_average=0;
+my @jack_weighted_fdm_values;
+my @jackarray;
+my $counter2=0;
+
+for ($y = 0 ; $y < $counter; $y++ ) {
+        for ($x = 0 ; $x < $counter; $x++ ) {
+                # leave out one row for each jackknfe replicates
+                if($y != $x){
+                        # load the number of fDM sites for each window
+                        $jack_sumsites[$counter2]=$fDM_numsites[$x];
+                        # add them up to eventually get the average
+                        $jack_averagesites+=$fDM_numsites[$x];
+                        # also load the fDM stat for each window
+                        $jack_fdm_values[$counter2]=$fdm_values[$x];
+                        # keep track of the number of windows
+                        $counter2+=1;                   
+                }
+        }
+        # make the $jack_averagesites an average
+        $jack_averagesites=$jack_averagesites/($counter2);
+        # calculate the weighted average
+        for ($x = 0 ; $x < $counter2; $x++ ) {
+                $jack_weighted_average+=($jack_sumsites[$x]*$jack_fdm_values[$x]/$jack_averagesites);
+        }
+        push(@jackarray,($jack_weighted_average/$counter2));
+        # reset variables
+        $jack_weighted_average=0;
+        $jack_averagesites=0;
+        @jack_fdm_values=();
+        $counter2=0;
+}
+
+# now calculate the standard error.
+my @jack_Dsumsites;
+my $jack_Daveragesites;
+my @jack_D_values;
+my $jack_Dweighted_average=0;
+my @jack_Dweighted_fdm_values;
+my @jackDarray;
+$counter2=0;
+
+for ($y = 0 ; $y < $counter; $y++ ) {
+        for ($x = 0 ; $x < $counter; $x++ ) {
+                # leave out one row for each jackknfe replicates
+                if($y != $x){
+                        # load the number of fDM sites for each window
+                        $jack_Dsumsites[$counter2]=$fDM_numsites[$x];
+                        # add them up to eventually get the average
+                        $jack_Daveragesites+=$fDM_numsites[$x];
+                        # also load the fDM stat for each window
+                        $jack_D_values[$counter2]=$D_values[$x];
+                        # keep track of the number of windows
+                        $counter2+=1;                   
+                }
+        }
+        # make the $jack_averagesites an average
+        $jack_Daveragesites=$jack_Daveragesites/($counter2);
+        # calculate the weighted average
+        for ($x = 0 ; $x < $counter2; $x++ ) {
+                $jack_Dweighted_average+=($jack_Dsumsites[$x]*$jack_D_values[$x]/$jack_Daveragesites);
+        }
+        push(@jackDarray,($jack_Dweighted_average/$counter2));
+        # reset variables
+        $jack_Dweighted_average=0;
+        $jack_Daveragesites=0;
+        @jack_D_values=();
+        $counter2=0;
+}
+
+# now calculate the variance of the jackknife replicates
+
+# first we need the mean
+my $jack_Dmean=0;
+for ($x = 0 ; $x < $counter; $x++ ) {
+        $jack_Dmean+=$jackDarray[$x];
+}
+$jack_Dmean=$jack_Dmean/($counter);
+
+my $jack_Dvar=0;
+for ($x = 0 ; $x < $counter; $x++ ) {
+        $jack_Dvar+=($jack_Dmean-$jackDarray[$x])**2;
+}
+
+# for the sample variance, divide by (n-1)
+print "jackDvar ",sprintf("%.9f",$jack_Dvar/($counter-1)),"\n";
+my $sterr = sqrt($counter*($jack_Dvar/($counter-1)));
+print "The standard error of the weighted D is ",sprintf("%.5f",$sterr),"\n";
+print "The 95\%CI of the weighted D is ",
+sprintf("%.6f",($weighted_D_average-1.96*$sterr))," - ",sprintf("%.6f",($weighted_D_average+1.96*$sterr)),"\n";
+
+close DATAINPUT;
+
+```
+run it in each csv folder
+
+```bash
+for i in all l_only s_only; do
+cd ${i}
+perl ../../scripts/jackknife.pl DB_chr.concat > DB_chr.concat_summary.tsv
+cd .. ; done
+
+```
+Then I did run jackknife for fdM slightly changing the script
+
+jackknife_for_fdm.pl
+```perl
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+
+# This program reads in the output of the script called Performs_ABBA_BABA_on_populations.pl
+# and calculates the standard error of the weighted mean value of fDM with weightings based 
+# on the sum of the number of abba and baba sites in each window.
+
+my $inputfile = $ARGV[0];
+
+unless (open DATAINPUT, $inputfile) {
+        print "Can not find the input file.\n";
+        exit;
+}
+
+my @sumsites;
+my $fDM_numsites;
+my @fDM_numsites;
+my @D_values;
+my @weighted_D_values;
+my @fdm_values;
+my @weighted_fdm_values;
+my $counter=0;
+my $y;
+my $x;
+my @temp; 
+my $weighted_fdm_values;
+my $ABBA=0;
+my $BABA=0;
+my $BBAA=0;
+
+while ( my $line = <DATAINPUT>) {
+        @temp=split(',',$line);
+        if($temp[0] ne 'scaffold'){
+                # if fDM is not numeric, it shouldn't contribute to the weighted average
+                if(($temp[6] !~ /nan/)&&($temp[7] !~ /nan/)&&($temp[8] !~ /nan/)&&($temp[10] !~ /nan/)){
+                        # load the number of ABBA and BABA sites for each window
+                        $sumsites[$counter]=$temp[6]+$temp[7];
+                        # load the number of fDM sites for each window
+                        $fDM_numsites[$counter]=$temp[6]+$temp[7];
+                        # add them up to eventually get the average
+                        $fDM_numsites+=$temp[6]+$temp[7];
+                        # also load the fDM stat for each window
+                        $D_values[$counter]=$temp[10];
+                        # keep track of how many windows are loaded
+                        $fdm_values[$counter]=$temp[10];
+                        # keep track of how many windows are loaded
+                        $counter+=1;
+                        $ABBA+=$temp[6];
+                        $BABA+=$temp[7];
+                }
+        }       
+}         
+
+# Calculate real stat
+# make $fDM_numsites the average per site
+$fDM_numsites=$fDM_numsites/($counter);
+my $weighted_D_average=0;
+my $weighted_fdm_average=0;
+# calculate the weighted average of fDM
+for ($y = 0 ; $y <= $#fdm_values; $y++ ) {
+        $weighted_D_average+=($fDM_numsites[$y]*$D_values[$y]/$fDM_numsites);
+        $weighted_fdm_average+=($fDM_numsites[$y]*$fdm_values[$y]/$fDM_numsites);
+}       
+print "The number of ABBA sites is ",$ABBA,"\n";
+print "The number of BABA sites is ",$BABA,"\n";
+print "The average number of ABBABABA sites per window is ",$fDM_numsites,"\n";
+#print "The non-weighted average is ",sprintf("%.6f",$non_weighted_fdm_value/($counter)),"\n";
+$weighted_D_average=$weighted_D_average/($counter);
+$weighted_fdm_average=$weighted_fdm_average/($counter);
+print "The weighted fDM average is ",sprintf("%.6f",$weighted_D_average),"\n";
+print "The weighted fDM average is ",sprintf("%.6f",$weighted_fdm_average),"\n";
+
+# now calculate the standard error.
+my @jack_sumsites;
+my $jack_averagesites;
+my @jack_fdm_values;
+my $jack_weighted_average=0;
+my @jack_weighted_fdm_values;
+my @jackarray;
+my $counter2=0;
+
+for ($y = 0 ; $y < $counter; $y++ ) {
+        for ($x = 0 ; $x < $counter; $x++ ) {
+                # leave out one row for each jackknfe replicates
+                if($y != $x){
+                        # load the number of fDM sites for each window
+                        $jack_sumsites[$counter2]=$fDM_numsites[$x];
+                        # add them up to eventually get the average
+                        $jack_averagesites+=$fDM_numsites[$x];
+                        # also load the fDM stat for each window
+                        $jack_fdm_values[$counter2]=$fdm_values[$x];
+                        # keep track of the number of windows
+                        $counter2+=1;                   
+                }
+        }
+        # make the $jack_averagesites an average
+        $jack_averagesites=$jack_averagesites/($counter2);
+        # calculate the weighted average
+        for ($x = 0 ; $x < $counter2; $x++ ) {
+                $jack_weighted_average+=($jack_sumsites[$x]*$jack_fdm_values[$x]/$jack_averagesites);
+        }
+        push(@jackarray,($jack_weighted_average/$counter2));
+        # reset variables
+        $jack_weighted_average=0;
+        $jack_averagesites=0;
+        @jack_fdm_values=();
+        $counter2=0;
+}
+
+# now calculate the standard error.
+my @jack_Dsumsites;
+my $jack_Daveragesites;
+my @jack_D_values;
+my $jack_Dweighted_average=0;
+my @jack_Dweighted_fdm_values;
+my @jackDarray;
+$counter2=0;
+
+for ($y = 0 ; $y < $counter; $y++ ) {
+        for ($x = 0 ; $x < $counter; $x++ ) {
+                # leave out one row for each jackknfe replicates
+                if($y != $x){
+                        # load the number of fDM sites for each window
+                        $jack_Dsumsites[$counter2]=$fDM_numsites[$x];
+                        # add them up to eventually get the average
+                        $jack_Daveragesites+=$fDM_numsites[$x];
+                        # also load the fDM stat for each window
+                        $jack_D_values[$counter2]=$D_values[$x];
+                        # keep track of the number of windows
+                        $counter2+=1;                   
+                }
+        }
+        # make the $jack_averagesites an average
+        $jack_Daveragesites=$jack_Daveragesites/($counter2);
+        # calculate the weighted average
+        for ($x = 0 ; $x < $counter2; $x++ ) {
+                $jack_Dweighted_average+=($jack_Dsumsites[$x]*$jack_D_values[$x]/$jack_Daveragesites);
+        }
+        push(@jackDarray,($jack_Dweighted_average/$counter2));
+        # reset variables
+        $jack_Dweighted_average=0;
+        $jack_Daveragesites=0;
+        @jack_D_values=();
+        $counter2=0;
+}
+
+# now calculate the variance of the jackknife replicates
+
+# first we need the mean
+my $jack_Dmean=0;
+for ($x = 0 ; $x < $counter; $x++ ) {
+        $jack_Dmean+=$jackDarray[$x];
+}
+$jack_Dmean=$jack_Dmean/($counter);
+
+my $jack_Dvar=0;
+for ($x = 0 ; $x < $counter; $x++ ) {
+        $jack_Dvar+=($jack_Dmean-$jackDarray[$x])**2;
+}
+
+# for the sample variance, divide by (n-1)
+print "jackDvar ",sprintf("%.9f",$jack_Dvar/($counter-1)),"\n";
+my $sterr = sqrt($counter*($jack_Dvar/($counter-1)));
+print "The standard error of the weighted fDM is ",sprintf("%.5f",$sterr),"\n";
+print "The 95\%CI of the weighted fDM is ",
+sprintf("%.6f",($weighted_D_average-1.96*$sterr))," - ",sprintf("%.6f",($weighted_D_average+1.96*$sterr)),"\n";
+
+close DATAINPUT;
+
+```
+
+running the same way as before
+```bash
+for i in all l_only s_only; do cd ${i};  perl ../../scripts/jackknife_for_fdm.pl DB_chr.concat > jack_fdm_DB_chr.concat.tsv 
+cd .. ; done
+
+```
+
+DONE
+
+Download the results now

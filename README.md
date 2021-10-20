@@ -2136,7 +2136,7 @@ mkdir ../KD_Threesis_BW_DCGV_csvs
 mv *BW_Laigns_DCGV_KD* ../BW_Laigns_DCGV_KD_csvs
 mv *KD_Threesis_BW_DCGV* ../KD_Threesis_BW_DCGV_csvs
 
-``
+```
 
 Put them in respective folders for subgenomes to make it easy to process- Run this inside each of the two newly created folders above
 

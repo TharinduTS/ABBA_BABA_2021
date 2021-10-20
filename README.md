@@ -2146,8 +2146,8 @@ mkdir l_only
 mkdir s_only
 
 mv *.csv all
-cp all/*L* l_only
-cp all/*S* s_only
+cp all/*L_finalized.geno* l_only
+cp all/*S_finalized.geno* s_only
 
 ```
 

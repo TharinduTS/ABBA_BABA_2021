@@ -20,6 +20,8 @@ To increase efficiency, I renamed chr 9_10 as chr 9 so I can submit job arrays
 find . -type f -name '*9_10*' | while read FILE ; do     newfile="$(echo ${FILE} |sed -e 's/9_10/9/g')" ;     mv "${FILE}" "${newfile}" ; done
 ```
 
+The following was to remove a messy sample/not needed otherwise ***************
+
 In the directory for each dataset (showing XL here), created directories
 ```bash
 mkdir sample_filtered_VCF
@@ -62,7 +64,7 @@ for i in ../XL_vcf_files/DB_new_chr${SLURM_ARRAY_TASK_ID}S_out.vcf_filtered.vcf.
 for i in ../XL_vcf_files/DB_new_chr${SLURM_ARRAY_TASK_ID}L_out.vcf_filtered.vcf.gz_filtered_removed.vcf; do vcftools --remove-indv BJE3632_Niewou_CATAAGT_cuttrim_sorted.bam --vcf ${i} --out ../sample_filtered_VCF/${i#../filtered_VCFs/}_s_rmved --recode;done
 
 ```
-
+done with removing messy sample ********************
 
 Create a reference genome folder and download reference genome in that folder
 ```

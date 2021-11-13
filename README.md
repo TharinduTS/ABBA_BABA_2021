@@ -1087,7 +1087,7 @@ tiff(file=paste0(opt$outPrefix,".tiff"),width = 2000, height = 1300,res=200)
 Finished Admixture above
 Starting ABBA BABA below
 
-concatanating files earlier in the pipeline slightly changed the results. Therefore doing it at the last step as described in [section](#ABBA-BABA-no-Concat-till-last-step)
+concatanating files earlier in the pipeline slightly changed the results. Therefore doing it at the last step as described in [this section](#abba-baba-no-Concat-till-last-step)
 
 skip this*****************
 # ABBA BABA

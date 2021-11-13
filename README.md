@@ -1841,7 +1841,7 @@ cd ..
 this calculation ends here
 # ******************* The End ******************************
 
-(#ABBA-BABA-no-Concat-till-last-step)
+(abba-baba-no-Concat-till-last-step)
 
 Finally, as there was a little difference between the number of ABBA/BABA sites (S+L was not equal to all) I tried doing the same test without concatanating chromosomes till the last step
 

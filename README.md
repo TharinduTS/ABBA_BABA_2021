@@ -1087,6 +1087,9 @@ tiff(file=paste0(opt$outPrefix,".tiff"),width = 2000, height = 1300,res=200)
 Finished Admixture above
 Starting ABBA BABA below
 
+concatanating files earlier in the pipeline slightly changed the results. Therefore doing it at the last step as described in [section](#ABBA-BABA-no-Concat-till-last-step)
+
+skip this*****************
 # ABBA BABA
 
 I am working in a newly created directory inside ABBA_BABA_final as
@@ -1838,6 +1841,7 @@ cd ..
 this calculation ends here
 # ******************* The End ******************************
 
+(#ABBA-BABA-no-Concat-till-last-step)
 
 Finally, as there was a little difference between the number of ABBA/BABA sites (S+L was not equal to all) I tried doing the same test without concatanating chromosomes till the last step
 

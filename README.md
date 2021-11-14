@@ -1399,38 +1399,38 @@ print "hi @files\n";
 
 # open an outputfile
 unless (open(OUTFILE, ">$inputfile.concat"))  {
-	print "I can\'t write to $inputfile.concat\n";
-	exit;
+        print "I can\'t write to $inputfile.concat\n";
+        exit;
 }
 print "Creating output file: $inputfile.concat\n";
 
 
 unless (open DATAINPUT, $files[0]) {
-	print "Can not find the input file.\n";
-	exit;
+        print "Can not find the input file.\n";
+        exit;
 }
 
 while ( my $line = <DATAINPUT>) {
-	print OUTFILE $line;
-}		
+        print OUTFILE $line;
+}               
 close DATAINPUT;
 
 my $counter=0;
 
 foreach my $infile (1..$#files){
-	unless (open DATAINPUT, $files[$infile]) {
-		print "Can not find the input file.\n";
-		exit;
-	}
-	$counter=0;
-	while ( my $line = <DATAINPUT>) {
-		if($counter>0){
-			print OUTFILE $line;
-		}
-		$counter+=1;
-	}		
-	close DATAINPUT;
-}	
+        unless (open DATAINPUT, $files[$infile]) {
+                print "Can not find the input file.\n";
+                exit;
+        }
+        $counter=0;
+        while ( my $line = <DATAINPUT>) {
+                if($counter>0){
+                        print OUTFILE $line;
+                }
+                $counter+=1;
+        }               
+        close DATAINPUT;
+}       
 
 close OUTFILE
 

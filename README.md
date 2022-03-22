@@ -1,4 +1,4 @@
-# ABBA_BABA_2021
+# ABBA_BABA_and_admix_2021
 
 I received seperate VCF files for each of the chromosomes of Xenopus laevis. Going to filter them and do ABBA BABA analysis
 
